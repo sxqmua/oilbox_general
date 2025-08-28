@@ -141,9 +141,9 @@ class calculate_keypoint:
     
     def generate_ReinforcingRib_BoxCover_Vertical_keypoint(self):
         """
-        3:箱盖加强筋坐标二维数组输出\n
+        3:箱盖竖直加强筋坐标二维数组输出\n
         可输出结构：八边形、四边形\n
-        最终输出变量：箱盖加强筋三维坐标\n
+        最终输出变量：箱盖竖直加强筋三维坐标\n
         支持最大数量为8\n
         占用：33-64
         """
@@ -183,10 +183,57 @@ class calculate_keypoint:
 
         return output_points
     
-    def KeyPoint(KeyPointList, num):
+    def generate_ReinforcingRib_BoxCover_Oblique_keypoint(self):
         """
+        4:箱盖斜加强筋坐标二维数组输出\n
+        可输出结构：八边形、四边形\n
+        最终输出变量：箱盖斜加强筋三维坐标\n
+        支持最大数量为8\n
+        占用：65-96
+        """
+        ReinforceRib_BoxC_Ob_D_LToL = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_Distance_LeftToLeft"]) # 箱盖加强筋（斜）左侧与箱体左侧距离
+        ReinforceRib_BoxC_Ob_D_RToL = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_Distance_RightToLeft"]) # 箱盖加强筋（斜）左侧与箱体左侧距离
+        ReinforceRib_BoxC_Ob_RelativeD = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_RelativeDistance"]) # 箱盖加强筋（斜）多个加强筋相对距离
+        ReinforceRib_BoxC_Ob_H = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_High"]) # 箱盖加强筋（斜）高度
+        rib_num = int(self.data_dict["ReinforcingRib_BoxCover_Oblique_Number"]) # 箱盖加强筋（斜）数量
         
-        """
+        # 加强筋坐标计算
+        x_points = []
+        if rib_num != 1:
+            for i in range(rib_num):
+                x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_LToL+ReinforceRib_BoxC_Ob_RelativeD*i)
+            for i in range(rib_num):
+                x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_RToL+ReinforceRib_BoxC_Ob_RelativeD*i)
+        y_points = [
+            self.width/2,
+            -self.width/2
+        ]
+        z_points = [
+            self.height,
+            self.height+ReinforceRib_BoxC_Ob_H
+        ]
+        
+        # 生成加强筋坐标
+        base_points = [
+            [y_points[0],z_points[0]],
+            [y_points[1],z_points[0]],
+            [y_points[1],z_points[1]],
+            [y_points[0],z_points[1]]
+        ]
+        copy_points = copy.deepcopy(base_points)
+        output_points = []
+        x_points_num = int(len(x_points)/2)
+        # 将x值交替插入点数组中
+        for j in range(x_points_num):
+            for index, value in enumerate(copy_points):
+                if index == 0 or index == 3:
+                    value.insert(0, x_points[j])
+                else:
+                    value.insert(0, x_points[j+x_points_num])
+            output_points = output_points + copy_points
+            copy_points = copy.deepcopy(base_points)
+
+        return output_points
 
 if __name__ == "__main__":
     data_table = [
