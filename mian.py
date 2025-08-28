@@ -78,7 +78,7 @@ KEYOPT, 1, 8, 2     ! 设置存储应力和应变
 """
 
 # 1. 定义参数
-excel_file = r"C:\Users\zengqingbo\Downloads\油箱建模算单.xlsx"
+excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
 ReservedQuantity_OfModules = [2*2,2*2,8] # 模块预留数量
 SerialNumber_KeyPoints = [1]
 for i in range(len(ReservedQuantity_OfModules)):
