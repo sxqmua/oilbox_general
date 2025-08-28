@@ -31,12 +31,12 @@ A ,15,16,8,7\nA ,16,9,1,8\n"""
         raise ValueError(f"不支持的箱体结构: {Box_Structure}")
     OutputList = OutputList + """ASEL, ALL\n! 创建新组件侧壁\nCM, CEBI, AREA\nASEL, NONE\n"""
 
-def generate_ReinforcRib_BoxC_Area(num_module):
+def generate_ReinforcRib_BoxC_Area(num_module,SerialNumber_KeyPoint):
     """箱盖加强筋面语句输出\n
     可输出结构：八边形、四边形\n
     num_module:模块序号
+    SerialNumber_KeyPoint：SerialNumber_KeyPoint
     """
-    global SerialNumber_KeyPoint
     global SerialNumber_KeyPoints
     global OutputList
     num_module -= 1 # 模块编号从0开始
@@ -78,7 +78,7 @@ KEYOPT, 1, 8, 2     ! 设置存储应力和应变
 
 # 1. 定义参数
 excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
-ReservedQuantity_OfModules = [2*2,2*2,8,8] # 模块预留数量
+ReservedQuantity_OfModules = [2*2,2*2,10,8] # 模块预留数量
 SerialNumber_KeyPoints = [1]
 for i in range(len(ReservedQuantity_OfModules)):
     SerialNumber_KeyPoints.append(ReservedQuantity_OfModules[i]*4 + SerialNumber_KeyPoints[i])
@@ -120,20 +120,11 @@ A , 28,27,26,25\nUP_RIM_AREA = _RETURN\nASBA, UP_RIM_AREA, UP_AREA
 # 箱盖竖直加强筋坐标输出
 KeyPointList_ReinforcingRib_BoxC_V = cal_point.generate_ReinforcingRib_BoxCover_Vertical_keypoint() 
 KeyPoint(KeyPointList_ReinforcingRib_BoxC_V,len(KeyPointList_ReinforcingRib_BoxC_V)) # 箱盖加强筋坐标点语句输出
-generate_ReinforcRib_BoxC_Area(3) # 生成箱盖加强筋面语句输出
+generate_ReinforcRib_BoxC_Area(3,SerialNumber_KeyPoint) # 生成箱盖加强筋面语句输出
 SerialNumber_KeyPoint = SerialNumber_KeyPoints[3] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """ASEL, ALL\n! 创建新组件箱盖竖直加强筋
+OutputList = OutputList + """ASEL, ALL\n! 创建新组件箱盖加强筋
 CMSEL, S, CEBI\nCMSEL, A, TOP_RIM\nCMSEL, A, BOTTOM_RIM
-ASEL, INVE\nCM, XDJIAQIANGJINs, AREA\nASEL, NONE\n"""
-
-# 箱盖斜加强筋坐标输出
-KeyPointList_ReinforcingRib_BoxC_Ob = cal_point.generate_ReinforcingRib_BoxCover_Oblique_keypoint() 
-KeyPoint(KeyPointList_ReinforcingRib_BoxC_Ob,len(KeyPointList_ReinforcingRib_BoxC_Ob)) # 箱盖加强筋坐标点语句输出
-generate_ReinforcRib_BoxC_Area(4) # 生成箱盖加强筋面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[4] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """ASEL, ALL\n! 创建新组件箱盖斜加强筋
-CMSEL, S, CEBI\nCMSEL, A, TOP_RIM\nCMSEL, A, BOTTOM_RIM\nCMSEL, A, XDJIAQIANGJINs
-ASEL, INVE\nCM, XDJIAQIANGJINx, AREA\nASEL, NONE\n"""
+ASEL, INVE\nCM, XDJIAQIANGJIN, AREA\nASEL, NONE\n"""
 
 # 箱盖分区建立
 

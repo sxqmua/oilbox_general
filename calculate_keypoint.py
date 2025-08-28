@@ -1,5 +1,6 @@
 import math
 import copy
+from table_extraction import table_extract
 
 class calculate_keypoint:
     # 将类名改为更明确描述功能的名称
@@ -141,75 +142,44 @@ class calculate_keypoint:
     
     def generate_ReinforcingRib_BoxCover_Vertical_keypoint(self):
         """
-        3:箱盖竖直加强筋坐标二维数组输出\n
+        3:箱盖加强筋坐标二维数组输出\n
         可输出结构：八边形、四边形\n
-        最终输出变量：箱盖竖直加强筋三维坐标\n
-        支持最大数量为8\n
-        占用：33-64
+        最终输出变量：箱盖加强筋三维坐标\n
+        支持最大数量为10\n
+        占用：33-72
         """
+        # 竖直
         ReinforceRib_BoxC_V_D_LToL = float(self.data_dict["ReinforcingRib_BoxCover_Vertical_Distance_LeftToLeft"]) # 箱盖加强筋（竖直）左侧与箱体左侧距离
         ReinforceRib_BoxC_V_RelativeD = float(self.data_dict["ReinforcingRib_BoxCover_Vertical_RelativeDistance"]) # 箱盖加强筋（竖直）多个加强筋相对距离
         ReinforceRib_BoxC_V_H = float(self.data_dict["ReinforcingRib_BoxCover_Vertical_High"]) # 箱盖加强筋（竖直）高度
-        rib_num = int(self.data_dict["ReinforcingRib_BoxCover_Vertical_Number"]) # 箱盖加强筋（竖直）数量
-        
-        # 加强筋坐标计算
-        x_points = []
-        if rib_num != 1:
-            for i in range(rib_num):
-                x_points.append(-self.length/2+ReinforceRib_BoxC_V_D_LToL+ReinforceRib_BoxC_V_RelativeD*i)
-        y_points = [
-            self.width/2,
-            -self.width/2
-        ]
-        z_points = [
-            self.height,
-            self.height+ReinforceRib_BoxC_V_H
-        ]
-        
-        # 生成加强筋坐标
-        base_points = [
-            [y_points[0],z_points[0]],
-            [y_points[1],z_points[0]],
-            [y_points[1],z_points[1]],
-            [y_points[0],z_points[1]]
-        ]
-        copy_points = copy.deepcopy(base_points)
-        output_points = []
-        for j in range(len(x_points)):
-            for i in copy_points:
-                i.insert(0, x_points[j])
-            output_points = output_points + copy_points
-            copy_points = copy.deepcopy(base_points)
-
-        return output_points
-    
-    def generate_ReinforcingRib_BoxCover_Oblique_keypoint(self):
-        """
-        4:箱盖斜加强筋坐标二维数组输出\n
-        可输出结构：八边形、四边形\n
-        最终输出变量：箱盖斜加强筋三维坐标\n
-        支持最大数量为8\n
-        占用：65-96
-        """
+        rib_V_num = int(self.data_dict["ReinforcingRib_BoxCover_Vertical_Number"]) # 箱盖加强筋（竖直）数量
+        # 斜
         ReinforceRib_BoxC_Ob_D_LToL = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_Distance_LeftToLeft"]) # 箱盖加强筋（斜）左侧与箱体左侧距离
         ReinforceRib_BoxC_Ob_D_RToL = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_Distance_RightToLeft"]) # 箱盖加强筋（斜）左侧与箱体左侧距离
         ReinforceRib_BoxC_Ob_RelativeD = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_RelativeDistance"]) # 箱盖加强筋（斜）多个加强筋相对距离
         ReinforceRib_BoxC_Ob_H = float(self.data_dict["ReinforcingRib_BoxCover_Oblique_High"]) # 箱盖加强筋（斜）高度
-        rib_num = int(self.data_dict["ReinforcingRib_BoxCover_Oblique_Number"]) # 箱盖加强筋（斜）数量
+        rib_Ob_num = int(self.data_dict["ReinforcingRib_BoxCover_Oblique_Number"]) # 箱盖加强筋（斜）数量
         
         # 加强筋坐标计算
+        # X坐标
         x_points = []
-        if rib_num != 1:
-            for i in range(rib_num):
+        if rib_V_num != 1:
+            for i in range(rib_V_num):
+                x_points.append(-self.length/2+ReinforceRib_BoxC_V_D_LToL+ReinforceRib_BoxC_V_RelativeD*i)
+        if rib_Ob_num != 1:
+            for i in range(rib_Ob_num):
                 x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_LToL+ReinforceRib_BoxC_Ob_RelativeD*i)
-            for i in range(rib_num):
+            for i in range(rib_Ob_num):
                 x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_RToL+ReinforceRib_BoxC_Ob_RelativeD*i)
+        # Y坐标
         y_points = [
             self.width/2,
             -self.width/2
         ]
+        # Z坐标
         z_points = [
             self.height,
+            self.height+ReinforceRib_BoxC_V_H,
             self.height+ReinforceRib_BoxC_Ob_H
         ]
         
@@ -222,33 +192,45 @@ class calculate_keypoint:
         ]
         copy_points = copy.deepcopy(base_points)
         output_points = []
-        x_points_num = int(len(x_points)/2)
-        # 将x值交替插入点数组中
-        for j in range(x_points_num):
+        x_points_num = int(len(x_points))
+        print(x_points)
+        print(x_points_num)
+        # 输出竖直的坐标，j(竖直数量)*i(4)
+        for j in range(int(rib_V_num)):
+            for i in copy_points:
+                i.insert(0, x_points[j])
+            output_points = output_points + copy_points
+            copy_points = copy.deepcopy(base_points)
+        copy_points = copy.deepcopy(base_points)
+        # 输出斜的坐标，j(斜数量)*index(4)
+        for j in range(int(rib_Ob_num)):
             for index, value in enumerate(copy_points):
                 if index == 0 or index == 3:
-                    value.insert(0, x_points[j])
+                    value.insert(0, x_points[j+rib_V_num])
                 else:
-                    value.insert(0, x_points[j+x_points_num])
+                    value.insert(0, x_points[int(j+rib_V_num+rib_Ob_num/2)])
             output_points = output_points + copy_points
             copy_points = copy.deepcopy(base_points)
 
         return output_points
+    
 
 if __name__ == "__main__":
-    data_table = [
-        ['Box_Structure', '八边形'],
-        ['Box_Length', '5000'], 
-        ['Box_Width', '2000'],
-        ['Box_Height', '3000'],
-        ['Box_VerticalLengthHypotenuse', '500'],
-        ['Box_HorizontalLengthHypotenuse', '500'],
-        ['ReinforcingRib_BoxCover_Vertical_Distance_LeftToLeft', '3107'],
-        ['ReinforcingRib_BoxCover_Vertical_RelativeDistance', '500'],
-        ['ReinforcingRib_BoxCover_Vertical_High', '200'],
-        ['ReinforcingRib_BoxCover_Vertical_Number', '3'],
-        ['BoxCover_Width', '200']
-    ]
+    excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
+    data_table = table_extract(excel_file)
+    # data_table = [
+    #     ['Box_Structure', '八边形'],
+    #     ['Box_Length', '5000'], 
+    #     ['Box_Width', '2000'],
+    #     ['Box_Height', '3000'],
+    #     ['Box_VerticalLengthHypotenuse', '500'],
+    #     ['Box_HorizontalLengthHypotenuse', '500'],
+    #     ['ReinforcingRib_BoxCover_Vertical_Distance_LeftToLeft', '3107'],
+    #     ['ReinforcingRib_BoxCover_Vertical_RelativeDistance', '500'],
+    #     ['ReinforcingRib_BoxCover_Vertical_High', '200'],
+    #     ['ReinforcingRib_BoxCover_Vertical_Number', '3'],
+    #     ['BoxCover_Width', '200']
+    # ]
     calculator = calculate_keypoint(data_table)
     points_3d = calculator.generate_box_points()
     points_boxcover = calculator.generate_boxcover_upround_keypoint()
