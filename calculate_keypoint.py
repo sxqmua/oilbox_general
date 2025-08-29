@@ -72,7 +72,7 @@ class calculate_keypoint:
         
         return bottom_points + top_points
     
-    def generate_boxcover_upround_keypoint(self):
+    def generate_boxcover_edge_keypoint(self):
         """
         2:箱沿坐标二维数组输出\n
         可输出结构：八边形、四边形\n
@@ -140,7 +140,7 @@ class calculate_keypoint:
         
         return bottom_points + top_points
     
-    def generate_ReinforcingRib_BoxCover_Vertical_keypoint(self):
+    def generate_ReinforcingRib_BoxCover_keypoint(self):
         """
         3:箱盖加强筋坐标二维数组输出\n
         可输出结构：八边形、四边形\n
@@ -212,8 +212,96 @@ class calculate_keypoint:
             output_points = output_points + copy_points
             copy_points = copy.deepcopy(base_points)
 
-        return output_points
+        return output_points , x_points , rib_V_num
     
+    def generate_BoxCover_keypoint(self,R_B_X_Points,rib_V_num):
+        """
+        4:箱盖坐标二维数组输出\n
+        可输出结构：八边形、四边形\n
+        最终输出变量：箱盖三维坐标\n
+        支持最大数量为11\n
+        占用：73-132\n
+        R_B_X_Points：箱盖加强筋X坐标点\n
+        rib_V_num:箱盖竖直加强筋数量
+        """
+        # 箱盖斜加强筋数量
+        rib_Ob_num = int((len(R_B_X_Points) - rib_V_num)/2)
+        # 确定箱盖加强筋最左和最右的两根
+        Left_X_Point_1, Left_X_Point_index = min((value, index) for index, value in enumerate(R_B_X_Points))
+        Right_X_Point_1, Right_X_Point_index = max((value, index) for index, value in enumerate(R_B_X_Points))
+        # 左右加强筋x坐标点
+        if Left_X_Point_index < rib_V_num:
+            Left_X_Point_2 = Left_X_Point_1
+        else:
+            Left_X_Point_2 = R_B_X_Points[Left_X_Point_index+rib_Ob_num]
+        if Right_X_Point_index < rib_V_num:
+            Right_X_Point_2 = Right_X_Point_1
+        else:
+            Right_X_Point_2 = R_B_X_Points[Right_X_Point_index+rib_Ob_num]
+        # Y坐标
+        y_points = [
+            self.width/2,
+            -self.width/2
+        ]
+        # Z坐标
+        z_points = [
+            self.height
+        ]
+        base_points = [
+            [y_points[0], z_points[0]],
+            [y_points[1], z_points[0]],
+            [y_points[1], z_points[0]],
+            [y_points[0], z_points[0]]
+        ]
+        output_points_4 = []
+        if self.structure == "八边形":
+        # 第一部分：生成两端六边形坐标点，均为逆时针
+            output_points_6 = [
+                [self.x_coords[0],self.y_coords[1], z_points[0]],
+                [self.x_coords[0],self.y_coords[2], z_points[0]],
+                [self.x_coords[1],self.y_coords[3], z_points[0]],
+                [Left_X_Point_2,self.y_coords[3], z_points[0]],
+                [Left_X_Point_1,self.y_coords[0], z_points[0]],
+                [self.x_coords[1],self.y_coords[0], z_points[0]],
+                [Right_X_Point_1,self.y_coords[0], z_points[0]],
+                [Right_X_Point_2,self.y_coords[3], z_points[0]],
+                [self.x_coords[2],self.y_coords[3], z_points[0]],
+                [self.x_coords[3],self.y_coords[2], z_points[0]],
+                [self.x_coords[3],self.y_coords[1], z_points[0]],
+                [self.x_coords[2],self.y_coords[0], z_points[0]]
+            ]
+        elif self.structure == "四边形":
+            output_points_4 = [
+                [self.x_coords[0], self.y_coords[0], z_points[0]],
+                [self.x_coords[0], self.y_coords[3], z_points[0]],
+                [Left_X_Point_2, self.y_coords[3], z_points[0]],
+                [Left_X_Point_1, self.y_coords[0], z_points[0]],
+                [Right_X_Point_1, self.y_coords[0], z_points[0]],
+                [Right_X_Point_2, self.y_coords[3], z_points[0]],
+                [self.x_coords[3], self.y_coords[3], z_points[0]],
+                [self.x_coords[3], self.y_coords[0], z_points[0]]
+            ]
+            
+        # 第二部分：生成中间四边形坐标点，均为逆时针
+        # 将R_B_X_Points排序，分为上下两部分
+        R_B_X_Points_up =  R_B_X_Points[:rib_V_num+rib_Ob_num]
+        R_B_X_Points_up.sort()
+        R_B_X_Points_down = R_B_X_Points[:rib_V_num]+R_B_X_Points[rib_V_num+rib_Ob_num:]
+        R_B_X_Points_down.sort()
+        for j in range(int(rib_V_num+rib_Ob_num-1)):
+            copy_points = copy.deepcopy(base_points)
+            for index, value in enumerate(copy_points):
+                if index == 0:
+                    value.insert(0,R_B_X_Points_up[j])
+                elif index == 1:
+                    value.insert(0,R_B_X_Points_down[j])
+                elif index == 2:
+                    value.insert(0,R_B_X_Points_down[j+1])
+                elif index == 3:
+                    value.insert(0,R_B_X_Points_up[j+1])
+            output_points_4 = output_points_4 + copy_points
+            
+        return output_points_6 , output_points_4
 
 if __name__ == "__main__":
     excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
@@ -233,8 +321,8 @@ if __name__ == "__main__":
     # ]
     calculator = calculate_keypoint(data_table)
     points_3d = calculator.generate_box_points()
-    points_boxcover = calculator.generate_boxcover_upround_keypoint()
-    points_ReinforcingRib_BoxC_V = calculator.generate_ReinforcingRib_BoxCover_Vertical_keypoint()
+    points_boxcover = calculator.generate_boxcover_edge_keypoint()
+    points_ReinforcingRib_BoxC_V = calculator.generate_ReinforcingRib_BoxCover_keypoint()
     # print(points_3d)
     # print(points_boxcover)
     print(points_ReinforcingRib_BoxC_V)
