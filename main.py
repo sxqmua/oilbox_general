@@ -18,6 +18,9 @@ def KeyPoint(INputDataList,num_point):
     # return 
 
 def generate_box_area(Box_Structure):
+    """箱盖加强筋面语句输出\n
+    可输出结构：八边形、四边形\n
+    Box_Structure:箱体结构"""
     global SerialNumber_KeyPoint
     global SerialNumber_KeyPoints
     global OutputList
@@ -117,7 +120,7 @@ A , 28,27,26,25\nUP_RIM_AREA = _RETURN\nASBA, UP_RIM_AREA, UP_AREA
 ! 创建新组件箱盖沿\nCM, TOP_RIM, AREA\nASEL, NONE
 """
 
-# 箱盖竖直加强筋坐标输出
+# 箱盖加强筋坐标输出
 KeyPointList_ReinforcingRib_BoxC_V = cal_point.generate_ReinforcingRib_BoxCover_Vertical_keypoint() 
 KeyPoint(KeyPointList_ReinforcingRib_BoxC_V,len(KeyPointList_ReinforcingRib_BoxC_V)) # 箱盖加强筋坐标点语句输出
 generate_ReinforcRib_BoxC_Area(3,SerialNumber_KeyPoint) # 生成箱盖加强筋面语句输出

@@ -208,7 +208,7 @@ class calculate_keypoint:
                 if index == 0 or index == 3:
                     value.insert(0, x_points[j+rib_V_num])
                 else:
-                    value.insert(0, x_points[int(j+rib_V_num+rib_Ob_num/2)])
+                    value.insert(0, x_points[int(j+rib_V_num+rib_Ob_num)])
             output_points = output_points + copy_points
             copy_points = copy.deepcopy(base_points)
 
