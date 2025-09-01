@@ -220,7 +220,7 @@ class calculate_keypoint:
         可输出结构：八边形、四边形\n
         最终输出变量：箱盖三维坐标\n
         支持最大数量为11\n
-        占用：73-132\n
+        占用：73-120\n
         R_B_X_Points：箱盖加强筋X坐标点\n
         rib_V_num:箱盖竖直加强筋数量
         """
@@ -302,6 +302,108 @@ class calculate_keypoint:
             output_points_4 = output_points_4 + copy_points
             
         return output_points_6 , output_points_4
+
+    def generate_ReinforcingRib_Long_Vertical(self):
+        """
+        5:箱盖纵向加强筋坐标二维数组输出\n
+        可输出结构：八边形、四边形\n
+        最终输出变量：箱盖纵向加强筋三维坐标\n
+        支持最大数量为20*5\n
+        占用：121-520
+        """
+        # 自变量提取
+        # 高压侧
+        ReinforceRib_L_V_Symmetry_H = self.data_dict["ReinforcingRib_Long_Vertical_Number_High"] # 加强筋（长轴竖向）是否对称（默认为对称，不对称时未高压侧）
+        ReinforceRib_L_V_Number_High = int(self.data_dict["ReinforcingRib_Long_Vertical_Number_High"]) # 加强筋（长轴竖向）数量
+        ReinforceRib_L_V_LOfTheTB_High = float(self.data_dict["ReinforcingRib_Long_Vertical_LengthOfTheTopBase_High"]) # 加强筋（长轴竖向）上底总长
+        ReinforceRib_L_V_LOfTheDB_High = float(self.data_dict["ReinforcingRib_Long_Vertical_LengthOfTheDownBase_High"]) # 加强筋（长轴竖向）下底总长
+        ReinforceRib_L_V_Width_High = float(self.data_dict["ReinforcingRib_Long_Vertical_Width_High"]) # 加强筋（长轴竖向）宽度
+        ReinforceRib_L_V_D_BottomAEdge_High = float(self.data_dict["ReinforcingRib_Long_Vertical_Distance_BottomAndEdge_High"]) # 加强筋（长轴竖向）底部与箱沿距离
+        ReinforceRib_L_V_D_LToL_High = float(self.data_dict["ReinforcingRib_Long_Vertical_Distance_LeftToLeft_High"]) # 加强筋（长轴竖向）左侧与箱体左侧距离
+        ReinforceRib_L_V_RelativeD_High = float(self.data_dict["ReinforcingRib_Long_Vertical_RelativeDistance_High"]) # 加强筋（长轴竖向）多个加强筋相对距离
+        ReinforceRib_L_V_High_FromTW_High = float(self.data_dict["ReinforcingRib_Long_Vertical_High_FromTankWall_High"]) # 加强筋（长轴竖向）高度
+        # 低压侧
+        ReinforceRib_L_V_Number_Low = int(self.data_dict["ReinforcingRib_Long_Vertical_Number_Low"]) # 加强筋（长轴竖向）数量
+        ReinforceRib_L_V_LOfTheTB_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_LengthOfTheTopBase_Low"]) # 加强筋（长轴竖向）上底总长
+        ReinforceRib_L_V_LOfTheDB_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_LengthOfTheDownBase_Low"]) # 加强筋（长轴竖向）下底总长
+        ReinforceRib_L_V_Width_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_Width_Low"]) # 加强筋（长轴竖向）宽度
+        ReinforceRib_L_V_D_BottomAEdge_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_Distance_BottomAndEdge_Low"]) # 加强筋（长轴竖向）底部与箱沿距离
+        ReinforceRib_L_V_D_LToL_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_Distance_LeftToLeft_Low"]) # 加强筋（长轴竖向）左侧与箱体左侧距离
+        ReinforceRib_L_V_RelativeD_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_RelativeDistance_Low"]) # 加强筋（长轴竖向）多个加强筋相对距离
+        ReinforceRib_L_V_High_FromTW_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_High_FromTankWall_Low"]) # 加强筋（长轴竖向）高度
+        
+        # 加强筋坐标计算
+        # X坐标
+        x_points = [
+            self.x_coords[0]+ReinforceRib_L_V_D_LToL_High,
+            self.x_coords[0]+ReinforceRib_L_V_D_LToL_High+ReinforceRib_L_V_Width_High,
+            self.x_coords[0]+ReinforceRib_L_V_D_LToL_Low,
+            self.x_coords[0]+ReinforceRib_L_V_D_LToL_Low+ReinforceRib_L_V_Width_Low,
+        ]
+        # Y坐标
+        y_points = [
+            self.y_coords[0],
+            self.y_coords[0]+ReinforceRib_L_V_High_FromTW_High,
+            self.y_coords[0],
+            self.y_coords[0]+ReinforceRib_L_V_High_FromTW_Low,
+        ]
+        # Z坐标
+        z_points = [
+            ReinforceRib_L_V_D_BottomAEdge_High,
+            ReinforceRib_L_V_D_BottomAEdge_High+ReinforceRib_L_V_LOfTheDB_High/2-ReinforceRib_L_V_LOfTheTB_High/2,
+            ReinforceRib_L_V_D_BottomAEdge_High+ReinforceRib_L_V_LOfTheDB_High/2+ReinforceRib_L_V_LOfTheTB_High/2,
+            ReinforceRib_L_V_D_BottomAEdge_High+ReinforceRib_L_V_LOfTheDB_High,
+            ReinforceRib_L_V_D_BottomAEdge_Low,
+            ReinforceRib_L_V_D_BottomAEdge_Low+ReinforceRib_L_V_LOfTheDB_Low/2-ReinforceRib_L_V_LOfTheTB_Low/2,
+            ReinforceRib_L_V_D_BottomAEdge_Low+ReinforceRib_L_V_LOfTheDB_Low/2+ReinforceRib_L_V_LOfTheTB_Low/2,
+            ReinforceRib_L_V_D_BottomAEdge_Low+ReinforceRib_L_V_LOfTheDB_Low,
+        ]
+        # 生成加强筋坐标
+        base_points = [
+            [x_points[0],y_points[0], z_points[3]],
+            [x_points[0],y_points[1], z_points[2]],
+            [x_points[0],y_points[1], z_points[1]],
+            [x_points[0],y_points[0], z_points[0]],
+            [x_points[1],y_points[0], z_points[3]],
+            [x_points[1],y_points[1], z_points[2]],
+            [x_points[1],y_points[1], z_points[1]],
+            [x_points[1],y_points[0], z_points[0]],
+            [x_points[0],y_points[1], z_points[2]],
+            [x_points[1],y_points[1], z_points[2]],
+            [x_points[1],y_points[1], z_points[1]],
+            [x_points[0],y_points[1], z_points[1]],
+            [x_points[0],y_points[1], z_points[1]],
+            [x_points[1],y_points[1], z_points[1]],
+            [x_points[1],y_points[0], z_points[0]],
+            [x_points[0],y_points[0], z_points[0]],
+            [x_points[0],y_points[1], z_points[2]],
+            [x_points[1],y_points[1], z_points[2]],
+            [x_points[1],y_points[0], z_points[3]],
+            [x_points[0],y_points[0], z_points[3]],
+        ]
+        output_points = []
+        # 输出高压侧坐标
+        for j in range(int(ReinforceRib_L_V_Number_High)):
+            copy_points = copy.deepcopy(base_points)
+            for i in copy_points:
+                i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
+            output_points = output_points + copy_points
+        # 输出低压侧坐标
+        # 根据是否对称输出不同低压侧坐标点
+        if ReinforceRib_L_V_Symmetry_H == "是":
+            copy_points = copy.deepcopy(output_points)
+            for i in copy_points:
+                i[1] = -i[1]
+            output_points = output_points + copy_points
+        elif ReinforceRib_L_V_Symmetry_H == "否":
+            for j in range(int(ReinforceRib_L_V_Number_Low)):
+                copy_points = copy.deepcopy(base_points)
+                for i in copy_points:
+                    i[0] = i[0] + ReinforceRib_L_V_RelativeD_Low*j
+                    i[1] = -i[1]
+                output_points = output_points + copy_points
+        
+        return output_points
 
 if __name__ == "__main__":
     excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"

@@ -82,7 +82,7 @@ KEYOPT, 1, 8, 2     ! 设置存储应力和应变
 
 # 1. 定义参数
 excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
-ReservedQuantity_OfModules = [2*2,2*2,10,12] # 模块预留数量
+ReservedQuantity_OfModules = [2*2,2*2,10,12,20*5] # 模块预留数量
 SerialNumber_KeyPoints = [1]
 for i in range(len(ReservedQuantity_OfModules)):
     SerialNumber_KeyPoints.append(ReservedQuantity_OfModules[i]*4 + SerialNumber_KeyPoints[i])
@@ -135,14 +135,24 @@ if data_dict["Box_Structure"] == "八边形":
     generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[3],SerialNumber_KeyPoint,6) # 生成箱盖加强筋面语句输出
     KeyPoint(KeyPointList_BoxC_4)
     generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[3]+12,SerialNumber_KeyPoint,4) # 生成箱盖加强筋面语句输出
-else:
+elif data_dict["Box_Structure"] == "四边形":
     KeyPoint(KeyPointList_BoxC_4)
     generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[3],SerialNumber_KeyPoint,4) # 生成箱盖加强筋面语句输出
 SerialNumber_KeyPoint = SerialNumber_KeyPoints[4] # 修改全局变量，确定模块之间位置
 OutputList = OutputList + """! 创建新组件箱盖\nCM, TOP, AREA\nASEL, NONE\n"""
 
+# 长轴纵向加强筋建立
+KeyPointList_ReinforcingRib_L_V= cal_point.generate_ReinforcingRib_Long_Vertical()
+KeyPoint(KeyPointList_ReinforcingRib_L_V) # 加强筋（长轴竖向）坐标点语句输出
+generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[4],SerialNumber_KeyPoint,4) # 生成加强筋（长轴竖向）面语句输出
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[5] # 修改全局变量，确定模块之间位置
+
+# 短轴纵向加强筋建立
+
+OutputList = OutputList + """! 创建新组件加强筋（长轴竖向）\nCM, JIAQIANGGONG, AREA\nASEL, NONE"""
+
 # print(data_table)
 # print(SerialNumber_KeyPoints)
 print(OutputList)
-# print(SerialNumber_KeyPoints)
+print(SerialNumber_KeyPoints)
 outputtxt(OutputList,"output.txt","output")
