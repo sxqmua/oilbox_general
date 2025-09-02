@@ -104,9 +104,9 @@ class calculate_keypoint:
             ]
         else:
             raise ValueError(f"不支持的箱体结构: {self.structure}")
-        
-        # 处理底部坐标
-        bottom_points = [point + [0] for point in base_points]
+
+        # 处理顶部坐标
+        top_points = [point + [self.height] for point in base_points]
         
         # 箱底沿坐标输出
         if self.structure == "八边形":
@@ -136,7 +136,7 @@ class calculate_keypoint:
             raise ValueError(f"不支持的箱体结构: {self.structure}")
         
         # 处理底部坐标
-        top_points = [point + [self.height] for point in base_points]
+        bottom_points = [point + [0] for point in base_points]
         
         return bottom_points + top_points
     
@@ -252,6 +252,7 @@ class calculate_keypoint:
             [y_points[0], z_points[0]]
         ]
         output_points_4 = []
+        output_points_6 = []
         if self.structure == "八边形":
         # 第一部分：生成两端六边形坐标点，均为逆时针
             output_points_6 = [
@@ -363,21 +364,23 @@ class calculate_keypoint:
             [x_points[0],y_points[1], z_points[1]],
             [x_points[0],y_points[0], z_points[0]],
             [x_points[1],y_points[0], z_points[3]],
-            [x_points[1],y_points[1], z_points[2]],
-            [x_points[1],y_points[1], z_points[1]],
             [x_points[1],y_points[0], z_points[0]],
+            [x_points[1],y_points[1], z_points[1]],
+            [x_points[1],y_points[1], z_points[2]],
+            
             [x_points[0],y_points[1], z_points[2]],
             [x_points[1],y_points[1], z_points[2]],
             [x_points[1],y_points[1], z_points[1]],
             [x_points[0],y_points[1], z_points[1]],
+            
             [x_points[0],y_points[1], z_points[1]],
             [x_points[1],y_points[1], z_points[1]],
             [x_points[1],y_points[0], z_points[0]],
             [x_points[0],y_points[0], z_points[0]],
             [x_points[0],y_points[1], z_points[2]],
-            [x_points[1],y_points[1], z_points[2]],
-            [x_points[1],y_points[0], z_points[3]],
             [x_points[0],y_points[0], z_points[3]],
+            [x_points[1],y_points[0], z_points[3]],
+            [x_points[1],y_points[1], z_points[2]],
         ]
         output_points = []
         # 输出高压侧坐标
@@ -395,6 +398,30 @@ class calculate_keypoint:
                 i[1] = -i[1]
             output_points = output_points + copy_points
         elif ReinforceRib_L_V_Symmetry_H == "否":
+            base_points = [
+                [x_points[2],y_points[2], z_points[7]],
+                [x_points[2],y_points[2], z_points[4]],
+                [x_points[2],y_points[3], z_points[5]],
+                [x_points[2],y_points[3], z_points[6]],
+                [x_points[3],y_points[2], z_points[7]],
+                [x_points[3],y_points[3], z_points[6]],
+                [x_points[3],y_points[3], z_points[5]],
+                [x_points[3],y_points[2], z_points[4]],
+                
+                [x_points[2],y_points[3], z_points[6]],
+                [x_points[2],y_points[3], z_points[5]],
+                [x_points[3],y_points[3], z_points[5]],
+                [x_points[3],y_points[3], z_points[6]],
+                
+                [x_points[2],y_points[3], z_points[5]],
+                [x_points[2],y_points[2], z_points[4]],
+                [x_points[3],y_points[2], z_points[4]],
+                [x_points[3],y_points[3], z_points[5]],
+                [x_points[2],y_points[3], z_points[6]],
+                [x_points[3],y_points[3], z_points[6]],
+                [x_points[3],y_points[2], z_points[7]],
+                [x_points[2],y_points[2], z_points[7]],
+            ]
             for j in range(int(ReinforceRib_L_V_Number_Low)):
                 copy_points = copy.deepcopy(base_points)
                 for i in copy_points:
@@ -467,10 +494,10 @@ class calculate_keypoint:
             self.x_coords[0]+ReinforceRib_L_H_D_LToL_Low+ReinforceRib_L_H_LOfTheDB_Low/2+ReinforceRib_L_H_LOfTheTB_Low/2,
             self.x_coords[0]+ReinforceRib_L_H_D_LToL_Low+ReinforceRib_L_H_LOfTheDB_Low,
             
-            self.x_coords[0]+ReinforceRib_L_V_D_LToL_High,
             self.x_coords[0]+ReinforceRib_L_V_D_LToL_High+ReinforceRib_L_V_Width_High,
-            self.x_coords[0]+ReinforceRib_L_V_D_LToL_Low,
+            self.x_coords[0]+ReinforceRib_L_V_D_LToL_High+ReinforceRib_L_V_RelativeD_High,
             self.x_coords[0]+ReinforceRib_L_V_D_LToL_Low+ReinforceRib_L_V_Width_Low,
+            self.x_coords[0]+ReinforceRib_L_V_D_LToL_Low+ReinforceRib_L_V_RelativeD_Low,
         ]
         # Y坐标
         y_points = [
@@ -489,13 +516,13 @@ class calculate_keypoint:
         # 生成加强筋坐标
         base_points = [
             [x_points[0],y_points[0], z_points[0]],
-            [x_points[2],y_points[0], z_points[0]],
-            [x_points[2],y_points[1], z_points[0]],
             [x_points[1],y_points[1], z_points[0]],
+            [x_points[2],y_points[1], z_points[0]],
+            [x_points[2],y_points[0], z_points[0]],
             [x_points[0],y_points[0], z_points[1]],
-            [x_points[1],y_points[1], z_points[1]],
-            [x_points[2],y_points[1], z_points[1]],
             [x_points[2],y_points[0], z_points[1]],
+            [x_points[2],y_points[1], z_points[1]],
+            [x_points[1],y_points[1], z_points[1]],
             
             [x_points[0],y_points[0], z_points[0]],
             [x_points[0],y_points[0], z_points[1]],
@@ -507,13 +534,13 @@ class calculate_keypoint:
             [x_points[2],y_points[1], z_points[0]],
             
             [x_points[8],y_points[0], z_points[0]],
-            [x_points[7],y_points[1], z_points[0]],
-            [x_points[6],y_points[1], z_points[0]],
             [x_points[6],y_points[0], z_points[0]],
+            [x_points[6],y_points[1], z_points[0]],
+            [x_points[7],y_points[1], z_points[0]],
             [x_points[8],y_points[0], z_points[1]],
-            [x_points[6],y_points[0], z_points[1]],
-            [x_points[6],y_points[1], z_points[1]],
             [x_points[7],y_points[1], z_points[1]],
+            [x_points[6],y_points[1], z_points[1]],
+            [x_points[6],y_points[0], z_points[1]],
             
             [x_points[8],y_points[0], z_points[0]],
             [x_points[7],y_points[1], z_points[0]],
@@ -539,15 +566,273 @@ class calculate_keypoint:
                 i[1] = -i[1]
             output_points = output_points + copy_points
         elif ReinforceRib_L_H_Symmetry_H == "否":
+            base_points = [
+                [x_points[3],y_points[2], z_points[2]],
+                [x_points[5],y_points[2], z_points[2]],
+                [x_points[5],y_points[3], z_points[2]],
+                [x_points[4],y_points[3], z_points[2]],
+                [x_points[3],y_points[2], z_points[3]],
+                [x_points[4],y_points[3], z_points[3]],
+                [x_points[5],y_points[3], z_points[3]],
+                [x_points[5],y_points[2], z_points[3]],
+                
+                [x_points[3],y_points[2], z_points[2]],
+                [x_points[4],y_points[3], z_points[2]],
+                [x_points[4],y_points[3], z_points[3]],
+                [x_points[3],y_points[2], z_points[3]],
+                [x_points[4],y_points[3], z_points[2]],
+                [x_points[5],y_points[3], z_points[2]],
+                [x_points[5],y_points[3], z_points[3]],
+                [x_points[4],y_points[3], z_points[3]],
+                
+                [x_points[11],y_points[2], z_points[2]],
+                [x_points[10],y_points[3], z_points[2]],
+                [x_points[9],y_points[3], z_points[2]],
+                [x_points[9],y_points[2], z_points[2]],
+                [x_points[11],y_points[2], z_points[3]],
+                [x_points[9],y_points[2], z_points[3]],
+                [x_points[9],y_points[3], z_points[3]],
+                [x_points[10],y_points[3], z_points[3]],
+                
+                [x_points[11],y_points[2], z_points[2]],
+                [x_points[11],y_points[2], z_points[3]],
+                [x_points[10],y_points[3], z_points[3]],
+                [x_points[10],y_points[3], z_points[2]],
+                [x_points[10],y_points[3], z_points[2]],
+                [x_points[10],y_points[3], z_points[3]],
+                [x_points[9],y_points[3], z_points[3]],
+                [x_points[9],y_points[3], z_points[2]],
+            ]
             for j in range(int(ReinforceRib_L_H_Number_Low)):
                 copy_points = copy.deepcopy(base_points)
                 for i in copy_points:
                     i[2] = i[2] + ReinforceRib_L_H_RelativeD_Low*j
                     i[1] = -i[1]
                 output_points = output_points + copy_points
-        
+                
+        # 输出中间段坐标
+        output_points_middle = []
+        base_points = [
+            [x_points[12], y_points[0], z_points[0]],
+            [x_points[12], y_points[1], z_points[0]],
+            [x_points[13], y_points[1], z_points[0]],
+            [x_points[13], y_points[0], z_points[0]],
+            
+            [x_points[12], y_points[0], z_points[1]],
+            [x_points[13], y_points[0], z_points[1]],
+            [x_points[13], y_points[1], z_points[1]],
+            [x_points[12], y_points[1], z_points[1]],
+            
+            [x_points[12], y_points[1], z_points[1]],
+            [x_points[13], y_points[1], z_points[1]],
+            [x_points[13], y_points[1], z_points[0]],
+            [x_points[12], y_points[1], z_points[0]],
+        ]
+        output_points_middle.extend(base_points)
+        # 中间部分高压侧
+        for j in range(int(ReinforceRib_L_V_Number_High-1)):
+            copy_points = copy.deepcopy(base_points)
+            for i in copy_points:
+                i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
+            output_points_middle = output_points_middle + copy_points
+        for j in range(1,int(ReinforceRib_L_H_Number_High)):
+            copy_points = copy.deepcopy(output_points_middle)
+            for i in copy_points:
+                i[2] = i[2] + ReinforceRib_L_H_RelativeD_High*j
+            output_points_middle = output_points_middle + copy_points
+        # 中间部分低压侧
+        if ReinforceRib_L_V_Symmetry_H == "是":
+            copy_points = copy.deepcopy(output_points_middle)
+            for i in copy_points:
+                i[1] = -i[1]
+            output_points = output_points_middle + copy_points
+        elif ReinforceRib_L_V_Symmetry_H == "否":
+            output_points_middle_1 = []
+            base_points = [
+                [x_points[14], y_points[2], z_points[2]],
+                [x_points[15], y_points[2], z_points[2]],
+                [x_points[15], y_points[3], z_points[2]],
+                [x_points[14], y_points[3], z_points[2]],
+                
+                [x_points[14], y_points[2], z_points[3]],
+                [x_points[14], y_points[3], z_points[3]],
+                [x_points[15], y_points[3], z_points[3]],
+                [x_points[15], y_points[2], z_points[3]],
+                
+                [x_points[14], y_points[3], z_points[3]],
+                [x_points[14], y_points[3], z_points[2]],
+                [x_points[15], y_points[3], z_points[2]],
+                [x_points[15], y_points[3], z_points[3]],
+            ]
+            for i in base_points:
+                i[1] = -i[1]
+            for j in range(int(ReinforceRib_L_V_Number_Low-1)):
+                copy_points = copy.deepcopy(base_points)
+                for i in copy_points:
+                    i[0] = i[0] + ReinforceRib_L_V_RelativeD_Low*j
+                output_points_middle_1 = output_points_middle_1 + copy_points
+                output_points_middle_2 = []
+            for j in range(1,int(ReinforceRib_L_H_Number_Low)):
+                copy_points = copy.deepcopy(output_points_middle_1)
+                for i in copy_points:
+                    i[2] = i[2] + ReinforceRib_L_H_RelativeD_Low*j
+                output_points_middle_2 = output_points_middle_2 + copy_points
+                
+            output_points = output_points + output_points_middle + output_points_middle_1 +output_points_middle_2
+        # for j in range(int(ReinforceRib_L_V_Number_High-1)):
+        #     copy_points = copy.deepcopy(output_points_middle)
+        #     for i in copy_points:
+        #         i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
         return output_points
 
+    def generate_ReinforcingRib_Short_Vertical(self):
+        """
+        7:加强筋（短轴竖向）坐标二维数组输出\n
+        可输出结构：八边形、四边形\n
+        最终输出变量：加强筋（短轴竖向）三维坐标\n
+        支持最大数量为6*5\n
+        占用：921-1040
+        """
+        # 自变量提取
+        # 高压侧
+        ReinforceRib_S_V_Symmetry_H = self.data_dict["ReinforcingRib_Short_Vertical_Symmetry_High"] # 加强筋（短轴竖向）是否对称（默认为对称，不对称时未高压侧）
+        ReinforceRib_S_V_Number_High = int(self.data_dict["ReinforcingRib_Short_Vertical_Number_High"]) # 加强筋（短轴竖向）数量
+        ReinforceRib_S_V_LOfTheTB_High = float(self.data_dict["ReinforcingRib_Short_Vertical_LengthOfTheTopBase_High"]) # 加强筋（短轴竖向）上底总长
+        ReinforceRib_S_V_LOfTheDB_High = float(self.data_dict["ReinforcingRib_Short_Vertical_LengthOfTheDownBase_High"]) # 加强筋（短轴竖向）下底总长
+        ReinforceRib_S_V_Width_High = float(self.data_dict["ReinforcingRib_Short_Vertical_Width_High"]) # 加强筋（短轴竖向）宽度
+        ReinforceRib_S_V_D_BottomAEdge_High = float(self.data_dict["ReinforcingRib_Short_Vertical_Distance_BottomAndEdge_High"]) # 加强筋（短轴竖向）底部与箱沿距离
+        ReinforceRib_S_V_D_LToL_High = float(self.data_dict["ReinforcingRib_Short_Vertical_Distance_LeftToLeft_High"]) # 加强筋（短轴竖向）左侧与箱体左侧距离
+        ReinforceRib_S_V_RelativeD_High = float(self.data_dict["ReinforcingRib_Short_Vertical_RelativeDistance_High"]) # 加强筋（短轴竖向）多个加强筋相对距离
+        ReinforceRib_S_V_High_FromTW_High = float(self.data_dict["ReinforcingRib_Short_Vertical_High_FromTankWall_High"]) # 加强筋（短轴竖向）高度
+        # 低压侧
+        ReinforceRib_S_V_Number_Low = int(self.data_dict["ReinforcingRib_Short_Vertical_Number_Low"]) # 加强筋（短轴竖向）数量
+        ReinforceRib_S_V_LOfTheTB_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_LengthOfTheTopBase_Low"]) # 加强筋（短轴竖向）上底总长
+        ReinforceRib_S_V_LOfTheDB_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_LengthOfTheDownBase_Low"]) # 加强筋（短轴竖向）下底总长
+        ReinforceRib_S_V_Width_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_Width_Low"]) # 加强筋（短轴竖向）宽度
+        ReinforceRib_S_V_D_BottomAEdge_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_Distance_BottomAndEdge_Low"]) # 加强筋（短轴竖向）底部与箱沿距离
+        ReinforceRib_S_V_D_LToL_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_Distance_LeftToLeft_Low"]) # 加强筋（短轴竖向）左侧与箱体左侧距离
+        ReinforceRib_S_V_RelativeD_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_RelativeDistance_Low"]) # 加强筋（短轴竖向）多个加强筋相对距离
+        ReinforceRib_S_V_High_FromTW_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_High_FromTankWall_Low"]) # 加强筋（短轴竖向）高度
+
+        # 加强筋坐标计算
+        # X坐标
+        x_points = [
+            self.x_coords[0]-ReinforceRib_S_V_High_FromTW_High,
+            self.x_coords[0],
+            self.x_coords[0]-ReinforceRib_S_V_High_FromTW_Low,
+            self.x_coords[0],
+        ]
+        # Y坐标
+        y_points = [
+            self.y_coords[0]-ReinforceRib_S_V_D_LToL_High,
+            self.y_coords[0]-ReinforceRib_S_V_D_LToL_High-ReinforceRib_S_V_Width_High,
+            self.y_coords[0]-ReinforceRib_S_V_D_LToL_Low,
+            self.y_coords[0]-ReinforceRib_S_V_D_LToL_Low-ReinforceRib_S_V_Width_Low,
+        ]
+        # Z坐标
+        z_points = [
+            ReinforceRib_S_V_D_BottomAEdge_High,
+            ReinforceRib_S_V_D_BottomAEdge_High+ReinforceRib_S_V_LOfTheDB_High/2-ReinforceRib_S_V_LOfTheTB_High/2,
+            ReinforceRib_S_V_D_BottomAEdge_High+ReinforceRib_S_V_LOfTheDB_High/2+ReinforceRib_S_V_LOfTheTB_High/2,
+            ReinforceRib_S_V_D_BottomAEdge_High+ReinforceRib_S_V_LOfTheDB_High,
+            ReinforceRib_S_V_D_BottomAEdge_Low,
+            ReinforceRib_S_V_D_BottomAEdge_Low+ReinforceRib_S_V_LOfTheDB_Low/2-ReinforceRib_S_V_LOfTheTB_Low/2,
+            ReinforceRib_S_V_D_BottomAEdge_Low+ReinforceRib_S_V_LOfTheDB_Low/2+ReinforceRib_S_V_LOfTheTB_Low/2,
+            ReinforceRib_S_V_D_BottomAEdge_Low+ReinforceRib_S_V_LOfTheDB_Low,
+        ]
+        # 生成加强筋坐标
+        base_points_H = [
+            [x_points[1],y_points[1], z_points[3]],
+            [x_points[0],y_points[1], z_points[2]],
+            [x_points[0],y_points[1], z_points[1]],
+            [x_points[1],y_points[1], z_points[0]],
+            [x_points[1],y_points[0], z_points[3]],
+            [x_points[1],y_points[0], z_points[0]],
+            [x_points[0],y_points[0], z_points[1]],
+            [x_points[0],y_points[0], z_points[2]],
+            
+            [x_points[1],y_points[1], z_points[3]],
+            [x_points[1],y_points[0], z_points[3]],
+            [x_points[0],y_points[0], z_points[2]],
+            [x_points[0],y_points[1], z_points[2]],
+            [x_points[1],y_points[1], z_points[0]],
+            [x_points[0],y_points[1], z_points[1]],
+            [x_points[0],y_points[0], z_points[1]],
+            [x_points[1],y_points[0], z_points[0]],
+            
+            [x_points[0],y_points[1], z_points[1]],
+            [x_points[0],y_points[1], z_points[2]],
+            [x_points[0],y_points[0], z_points[2]],
+            [x_points[0],y_points[0], z_points[1]],
+        ]
+        output_points = []
+        # 输出高压侧坐标
+        for j in range(int(ReinforceRib_S_V_Number_High)):
+            copy_points = copy.deepcopy(base_points_H)
+            for i in copy_points:
+                i[1] = i[1] - ReinforceRib_S_V_RelativeD_High*j
+            output_points.extend(copy_points)
+        # 输出低压侧坐标
+        # 根据是否对称输出不同低压侧坐标点
+        if ReinforceRib_S_V_Symmetry_H == "是":
+            base_points_L = [
+                [-x_points[1],y_points[0], z_points[3]],
+                [-x_points[0],y_points[0], z_points[2]],
+                [-x_points[0],y_points[0], z_points[1]],
+                [-x_points[1],y_points[0], z_points[0]],
+                [-x_points[1],y_points[1], z_points[3]],
+                [-x_points[1],y_points[1], z_points[0]],
+                [-x_points[0],y_points[1], z_points[1]],
+                [-x_points[0],y_points[1], z_points[2]],
+                
+                [-x_points[1],y_points[1], z_points[0]],
+                [-x_points[1],y_points[0], z_points[0]],
+                [-x_points[0],y_points[0], z_points[1]],
+                [-x_points[0],y_points[1], z_points[1]],
+                [-x_points[1],y_points[1], z_points[3]],
+                [-x_points[0],y_points[1], z_points[2]],
+                [-x_points[0],y_points[0], z_points[2]],
+                [-x_points[1],y_points[0], z_points[3]],
+                
+                [-x_points[0],y_points[1], z_points[2]],
+                [-x_points[0],y_points[1], z_points[1]],
+                [-x_points[0],y_points[0], z_points[1]],
+                [-x_points[0],y_points[0], z_points[2]],
+            ]
+        elif ReinforceRib_S_V_Symmetry_H == "否":
+            base_points_L = [
+                [-x_points[3],y_points[2], z_points[7]],
+                [-x_points[2],y_points[2], z_points[6]],
+                [-x_points[2],y_points[2], z_points[5]],
+                [-x_points[3],y_points[2], z_points[4]],
+                [-x_points[3],y_points[3], z_points[7]],
+                [-x_points[3],y_points[3], z_points[4]],
+                [-x_points[2],y_points[3], z_points[5]],
+                [-x_points[2],y_points[3], z_points[6]],
+                
+                [-x_points[3],y_points[3], z_points[4]],
+                [-x_points[3],y_points[2], z_points[4]],
+                [-x_points[2],y_points[2], z_points[5]],
+                [-x_points[2],y_points[3], z_points[5]],
+                [-x_points[3],y_points[3], z_points[7]],
+                [-x_points[2],y_points[3], z_points[6]],
+                [-x_points[2],y_points[2], z_points[6]],
+                [-x_points[3],y_points[2], z_points[7]],
+                
+                [-x_points[2],y_points[3], z_points[6]],
+                [-x_points[2],y_points[3], z_points[5]],
+                [-x_points[2],y_points[2], z_points[5]],
+                [-x_points[2],y_points[2], z_points[6]],
+            ]
+        for j in range(int(ReinforceRib_S_V_Number_Low)):
+            copy_points = copy.deepcopy(base_points_L)
+            for i in copy_points:
+                i[1] = i[1] - ReinforceRib_S_V_RelativeD_Low*j
+            output_points.extend(copy_points)
+            
+
+        return output_points
+    
 if __name__ == "__main__":
     excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
     data_table = table_extract(excel_file)
@@ -567,7 +852,8 @@ if __name__ == "__main__":
     calculator = calculate_keypoint(data_table)
     points_3d = calculator.generate_box_points()
     points_boxcover = calculator.generate_boxcover_edge_keypoint()
+    points_ReinforcingRib_Long_Horizontal = calculator.generate_ReinforcingRib_Long_Horizontal()
     points_ReinforcingRib_BoxC_V = calculator.generate_ReinforcingRib_BoxCover_keypoint()
     # print(points_3d)
     # print(points_boxcover)
-    print(points_ReinforcingRib_BoxC_V)
+    # print(points_ReinforcingRib_Long_Horizontal)

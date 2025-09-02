@@ -93,7 +93,9 @@ data_table = table_extract(excel_file)
 data_dict = dict(data_table) # 字典转化
 
 # 3. 计算坐标
+
 cal_point = calculate_keypoint(data_table) # 加载计算模块
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[0]
 # 3.1. 箱体
 # 箱体坐标输出
 KeyPointList_TankWall = cal_point.generate_box_points() 
@@ -121,47 +123,6 @@ A , 24,23,22,21\nUP_RIM_AREA = _RETURN\nASBA, UP_RIM_AREA, UP_AREA
 ! 创建新组件箱盖沿\nCM, TOP_RIM, AREA\nASEL, NONE
 """
 
-# 箱盖加强筋坐标输出
-KeyPointList_ReinforcingRib_BoxC , X_KeyPointList_ReinforcingRib_BoxC, rib_V_num = cal_point.generate_ReinforcingRib_BoxCover_keypoint() 
-KeyPoint(KeyPointList_ReinforcingRib_BoxC) # 箱盖加强筋坐标点语句输出
-generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[2],SerialNumber_KeyPoint,4) # 生成箱盖加强筋面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[3] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """! 创建新组件箱盖加强筋\nCM, XDJIAQIANGJIN, AREA\nASEL, NONE\n"""
-
-# 箱盖分区建立
-KeyPointList_BoxC_6 , KeyPointList_BoxC_4 = cal_point.generate_BoxCover_keypoint(X_KeyPointList_ReinforcingRib_BoxC,rib_V_num)
-if data_dict["Box_Structure"] == "八边形":
-    KeyPoint(KeyPointList_BoxC_6)
-    generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[3],SerialNumber_KeyPoint,6) # 生成箱盖加强筋面语句输出
-    KeyPoint(KeyPointList_BoxC_4)
-    generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[3]+12,SerialNumber_KeyPoint,4) # 生成箱盖加强筋面语句输出
-elif data_dict["Box_Structure"] == "四边形":
-    KeyPoint(KeyPointList_BoxC_4)
-    generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[3],SerialNumber_KeyPoint,4) # 生成箱盖加强筋面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[4] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """! 创建新组件箱盖\nCM, TOP, AREA\nASEL, NONE\n"""
-
-# 长轴纵向加强筋建立
-KeyPointList_ReinforcingRib_L_V= cal_point.generate_ReinforcingRib_Long_Vertical()
-KeyPoint(KeyPointList_ReinforcingRib_L_V) # 加强筋（长轴竖向）坐标点语句输出
-generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[4],SerialNumber_KeyPoint,4) # 生成加强筋（长轴竖向）面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[5] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """! 创建新组件长轴纵向加强筋\n"""
-
-# 长轴横向加强筋建立
-KeyPointList_ReinforcingRib_L_H= cal_point.generate_ReinforcingRib_Long_Horizontal()
-KeyPoint(KeyPointList_ReinforcingRib_L_H) # 加强筋（短轴横向）坐标点语句输出
-generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[5],SerialNumber_KeyPoint,4) # 生成加强筋（短轴横向）面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[6] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """! 创建新组件长轴横向加强筋\n"""
-
-# 短轴竖向加强筋建立
-KeyPointList_ReinforcingRib_S_V= cal_point.generate_ReinforcingRib_Short_Vertical()
-KeyPoint(KeyPointList_ReinforcingRib_S_V) # 加强筋（短轴竖向）坐标点语句输出
-generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[6],SerialNumber_KeyPoint,4) # 生成加强筋（短轴竖向）面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[7] # 修改全局变量，确定模块之间位置
-OutputList = OutputList + """! 创建新组件短轴纵向加强筋\n"""
-
 OutputList = OutputList + """! 创建新组件加强筋\nCM, JIAQIANGGONG, AREA\nASEL, NONE\n"""
 OutputList = OutputList + """\nASEL, ALL\nAPLOT\n/PSYMB,ADIR,1"""
 
@@ -169,4 +130,4 @@ OutputList = OutputList + """\nASEL, ALL\nAPLOT\n/PSYMB,ADIR,1"""
 # print(SerialNumber_KeyPoints)
 print(OutputList)
 print(SerialNumber_KeyPoints)
-outputtxt(OutputList,"output.txt","output")
+outputtxt(OutputList,"output_test.txt","output")
