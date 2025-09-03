@@ -161,8 +161,8 @@ KeyPoint(KeyPointList_ReinforcingRib_S_V) # 加强筋（短轴竖向）坐标点
 generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[6],SerialNumber_KeyPoint,4) # 生成加强筋（短轴竖向）面语句输出
 SerialNumber_KeyPoint = SerialNumber_KeyPoints[7] # 修改全局变量，确定模块之间位置
 OutputList = OutputList + """! 创建新组件短轴纵向加强筋\n"""
+OutputList = OutputList + """! 创建新组件加强拱\nCM, JIAQIANGGONG, AREA\nASEL, NONE\n"""
 
-OutputList = OutputList + """! 创建新组件加强筋\nCM, JIAQIANGGONG, AREA\nASEL, NONE\n"""
 OutputList = OutputList + """\nASEL, ALL\nAPLOT\n/PSYMB,ADIR,1"""
 
 # print(data_table)

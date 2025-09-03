@@ -95,33 +95,15 @@ data_dict = dict(data_table) # 字典转化
 # 3. 计算坐标
 
 cal_point = calculate_keypoint(data_table) # 加载计算模块
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[0]
-# 3.1. 箱体
-# 箱体坐标输出
-KeyPointList_TankWall = cal_point.generate_box_points() 
-KeyPoint(KeyPointList_TankWall) # 箱体坐标点语句输出
-generate_box_area(data_dict["Box_Structure"]) # 生成箱体面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[1] # 修改全局变量，确定模块之间位置
-# 箱盖沿坐标输出
-KeyPointList_BoxCover = cal_point.generate_boxcover_edge_keypoint() 
-KeyPoint(KeyPointList_BoxCover) # 箱盖沿坐标点语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[2] # 修改全局变量，确定模块之间位置
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[4]
 
+# 长轴纵向加强筋建立
+KeyPointList_ReinforcingRib_L_V= cal_point.generate_ReinforcingRib_Long_Vertical()
+KeyPoint(KeyPointList_ReinforcingRib_L_V) # 加强筋（长轴竖向）坐标点语句输出
+generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[4],SerialNumber_KeyPoint,4) # 生成加强筋（长轴竖向）面语句输出
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[5] # 修改全局变量，确定模块之间位置
+OutputList = OutputList + """! 创建新组件长轴纵向加强筋\n"""
 
-if data_dict["Box_Structure"] == "八边形":
-    OutputList = OutputList + """A , 1, 2, 3, 4, 5, 6, 7, 8\nBOTTOM_AREA = _RETURN
-A , 17,18,19,20,21,22,23,24\nRIM_AREA = _RETURN\nASBA, RIM_AREA, BOTTOM_AREA
-! 创建新组件箱底沿\nCM, BOTTOM_RIM, AREA\nASEL, NONE\nA , 16,15,14,13,12,11,10,9\nUP_AREA = _RETURN
-A , 32,31,30,29,28,27,26,25\nUP_RIM_AREA = _RETURN\nASBA, UP_RIM_AREA, UP_AREA
-! 创建新组件箱盖沿\nCM, TOP_RIM, AREA\nASEL, NONE
-"""
-elif data_dict["Box_Structure"] == "四边形":
-    OutputList = OutputList + """A , 1, 2, 3, 4\nBOTTOM_AREA = _RETURN
-A , 17,18,19,20\nRIM_AREA = _RETURN\nASBA, RIM_AREA, BOTTOM_AREA
-! 创建新组件箱底沿\nCM, BOTTOM_RIM, AREA\nASEL, NONE\nA , 8,7,6,5\nUP_AREA = _RETURN
-A , 24,23,22,21\nUP_RIM_AREA = _RETURN\nASBA, UP_RIM_AREA, UP_AREA
-! 创建新组件箱盖沿\nCM, TOP_RIM, AREA\nASEL, NONE
-"""
 
 OutputList = OutputList + """! 创建新组件加强筋\nCM, JIAQIANGGONG, AREA\nASEL, NONE\n"""
 OutputList = OutputList + """\nASEL, ALL\nAPLOT\n/PSYMB,ADIR,1"""

@@ -330,7 +330,10 @@ class calculate_keypoint:
         ReinforceRib_L_V_D_LToL_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_Distance_LeftToLeft_Low"]) # 加强筋（长轴竖向）左侧与箱体左侧距离
         ReinforceRib_L_V_RelativeD_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_RelativeDistance_Low"]) # 加强筋（长轴竖向）多个加强筋相对距离
         ReinforceRib_L_V_High_FromTW_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_High_FromTankWall_Low"]) # 加强筋（长轴竖向）高度
-        
+        # 竖向加强槽下加强筋
+        ReinforceRib_V_UVReinforce_Left = float(self.data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Left"]) # 竖向加强槽下加强筋左侧1
+        ReinforceRib_V_UVReinforce_Right = float(self.data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Right"]) # 竖向加强槽下加强筋右侧2
+        ReinforceRib_V_UVReinforce_L_E = self.data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Long_Exist"] # 竖向加强槽下加强筋长轴是否存在
         # 加强筋坐标计算
         # X坐标
         x_points = [
@@ -429,6 +432,49 @@ class calculate_keypoint:
                     i[1] = -i[1]
                 output_points = output_points + copy_points
         
+            # 竖向加强槽下加强筋坐标输出
+        if ReinforceRib_V_UVReinforce_L_E == "是":
+            # 计算竖向加强槽下加强筋坐标
+            # 高压侧
+            output_points_middle = []
+            base_points = [
+                [x_points[0]+ReinforceRib_V_UVReinforce_Left,y_points[0], 0],
+                [x_points[0]+ReinforceRib_V_UVReinforce_Left,y_points[0], z_points[0]],
+                [x_points[0]+ReinforceRib_V_UVReinforce_Left,y_points[1], z_points[1]],
+                [x_points[0]+ReinforceRib_V_UVReinforce_Left,self.y_coords[0]+self.BoxEdge_Width, 0],
+                [x_points[1]-ReinforceRib_V_UVReinforce_Right,y_points[0], 0],
+                [x_points[1]-ReinforceRib_V_UVReinforce_Right,y_points[0], z_points[0]],
+                [x_points[1]-ReinforceRib_V_UVReinforce_Right,y_points[1], z_points[1]],
+                [x_points[1]-ReinforceRib_V_UVReinforce_Right,self.y_coords[0]+self.BoxEdge_Width, 0],
+            ]
+            for j in range(ReinforceRib_L_V_Number_High):
+                copy_points = copy.deepcopy(base_points)
+                for i in copy_points:
+                    i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
+                output_points_middle.extend(copy_points)
+            # 低压侧
+            if ReinforceRib_L_V_Symmetry_H == "是":
+                copy_points = copy.deepcopy(output_points_middle)
+                for i in copy_points:
+                    i[1] = -i[1]
+                output_points_middle.extend(copy_points)
+            elif ReinforceRib_L_V_Symmetry_H == "否":
+                base_points = [
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-y_points[0], 0],
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-y_points[0], z_points[2]],
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-y_points[1], z_points[3]],
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-self.y_coords[0]-self.BoxEdge_Width, 0],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-y_points[0], 0],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-y_points[0], z_points[2]],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-y_points[1], z_points[3]],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-self.y_coords[0]-self.BoxEdge_Width, 0],
+                ]
+                for j in range(ReinforceRib_L_V_Number_Low):
+                    copy_points = copy.deepcopy(base_points)
+                    for i in copy_points:
+                        i[0] = i[0] + ReinforceRib_L_V_RelativeD_Low*j
+                    output_points_middle.extend(copy_points)
+                output_points.extend(output_points_middle)
         return output_points
     
     def generate_ReinforcingRib_Long_Horizontal(self):
@@ -713,6 +759,10 @@ class calculate_keypoint:
         ReinforceRib_S_V_D_LToL_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_Distance_LeftToLeft_Low"]) # 加强筋（短轴竖向）左侧与箱体左侧距离
         ReinforceRib_S_V_RelativeD_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_RelativeDistance_Low"]) # 加强筋（短轴竖向）多个加强筋相对距离
         ReinforceRib_S_V_High_FromTW_Low = float(self.data_dict["ReinforcingRib_Short_Vertical_High_FromTankWall_Low"]) # 加强筋（短轴竖向）高度
+        # 竖向加强槽下加强筋
+        ReinforceRib_V_UVReinforce_Left = float(self.data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Left"]) # 竖向加强槽下加强筋左侧1
+        ReinforceRib_V_UVReinforce_Right = float(self.data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Right"]) # 竖向加强槽下加强筋右侧2
+        ReinforceRib_V_UVReinforce_S_E = self.data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Short_Exist"] # 竖向加强槽下加强筋短轴是否存在
 
         # 加强筋坐标计算
         # X坐标
@@ -830,9 +880,56 @@ class calculate_keypoint:
                 i[1] = i[1] - ReinforceRib_S_V_RelativeD_Low*j
             output_points.extend(copy_points)
             
+            # 竖向加强槽下加强筋坐标输出
+        if ReinforceRib_V_UVReinforce_S_E == "是":
+            # 计算竖向加强槽下加强筋坐标
+            # 高压侧
+            output_points_middle = []
+            base_points = [
+                [x_points[0],y_points[0]-ReinforceRib_V_UVReinforce_Left, z_points[1]],
+                [x_points[1],y_points[0]-ReinforceRib_V_UVReinforce_Left, z_points[0]],
+                [x_points[1],y_points[0]-ReinforceRib_V_UVReinforce_Left, 0],
+                [self.x_coords[0]-self.BoxEdge_Width,y_points[0]-ReinforceRib_V_UVReinforce_Left, 0],
+                [x_points[0],y_points[1]+ReinforceRib_V_UVReinforce_Right, z_points[1]],
+                [x_points[1],y_points[1]+ReinforceRib_V_UVReinforce_Right, z_points[0]],
+                [x_points[1],y_points[1]+ReinforceRib_V_UVReinforce_Right, 0],
+                [self.x_coords[0]-self.BoxEdge_Width,y_points[1]+ReinforceRib_V_UVReinforce_Right, 0],
+            ]
+            for j in range(ReinforceRib_S_V_Number_High):
+                copy_points = copy.deepcopy(base_points)
+                for i in copy_points:
+                    i[1] = i[1] - ReinforceRib_S_V_RelativeD_High*j
+            output_points_middle.extend(copy_points)
+            # 低压侧
+            if ReinforceRib_S_V_Symmetry_H == "是":
+                copy_points = copy.deepcopy(output_points_middle)
+                for i in copy_points:
+                    i[0] = -i[0]
+                output_points_middle.extend(copy_points)
+            elif ReinforceRib_S_V_Symmetry_H == "否":
+                base_points = [
+                    [-x_points[2],y_points[2]-ReinforceRib_V_UVReinforce_Left, z_points[5]],
+                    [-x_points[3],y_points[2]-ReinforceRib_V_UVReinforce_Left, z_points[4]],
+                    [-x_points[3],y_points[2]-ReinforceRib_V_UVReinforce_Left, 0],
+                    [-(self.x_coords[0]-self.BoxEdge_Width),y_points[2]-ReinforceRib_V_UVReinforce_Left, 0],
+                    [-x_points[2],y_points[3]+ReinforceRib_V_UVReinforce_Right, z_points[5]],
+                    [-x_points[3],y_points[3]+ReinforceRib_V_UVReinforce_Right, z_points[4]],
+                    [-x_points[3],y_points[3]+ReinforceRib_V_UVReinforce_Right, 0],
+                    [-(self.x_coords[0]-self.BoxEdge_Width),y_points[3]+ReinforceRib_V_UVReinforce_Right, 0],
+                ]
+                for j in range(ReinforceRib_S_V_Number_Low):
+                    copy_points = copy.deepcopy(base_points)
+                    for i in copy_points:
+                        i[1] = i[1] - ReinforceRib_S_V_RelativeD_Low*j
+                    output_points_middle.extend(copy_points)
+                output_points.extend(output_points_middle)
 
         return output_points
     
+    
+        
+        
+
 if __name__ == "__main__":
     excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
     data_table = table_extract(excel_file)
