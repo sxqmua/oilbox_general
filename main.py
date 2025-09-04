@@ -59,8 +59,20 @@ def generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoint_in,SerialNumber_KeyPoin
     return SerialNumber_KeyPoint
     
 
+# 1. 定义参数
+excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
+ReservedQuantity_OfModules = [2*2,2*2,10,12,20*7,20*5,6*7] # 模块预留数量
+SerialNumber_KeyPoints = [1]
+for i in range(len(ReservedQuantity_OfModules)):
+    SerialNumber_KeyPoints.append(ReservedQuantity_OfModules[i]*4 + SerialNumber_KeyPoints[i])
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[0] # 全局变量，确定模块之间位置
+
+# 2. 提取参数
+data_table = table_extract(excel_file)
+data_dict = dict(data_table) # 字典转化
+
 # 定义模板初始段
-OutputList = """FINISH              ! 结束当前模块 xin
+OutputList = f"""FINISH              ! 结束当前模块 xin
 /CLEAR , START       ! 清除数据库，开始新的分析
 !========== 定义参数 (Preprocessor) ==========
 str = '%z%h=%h%T1=%T1%T2=%T2%'
@@ -78,19 +90,21 @@ MP, DENS, 1, 7.85e-9   ! 密度 (kg/m³)
 ! 2. 定义单元类型 (壳单元SHELL181)
 ET, 1, SHELL181     ! 选择壳单元类型
 KEYOPT, 1, 8, 2     ! 设置存储应力和应变
+
+! 3. 定义不同厚度的实常
+! 箱顶厚度
+R, 1, {data_dict["BoxCover_Thickness"]}
+! 箱沿及箱顶箱沿厚度 
+R, 2, {data_dict["BoxEdge_Thickness"]}
+! 侧壁厚度
+R, 3, {data_dict["Box_ShortAxisThickness"]}
+! 加强拱厚度
+R, 4, {data_dict["ReinforcingRib_Long_Vertical_Thickness_High"]}
+! 箱顶加强筋厚度
+R, 5, {data_dict["ReinforcingRib_BoxCover_Vertical_Thickness"]}
+! 竖向加强槽下加强筋厚度
+R, 6, {data_dict["ReinforcingRib_Vertical_UnderVerticalReinforcement_Thickness"]}
 """
-
-# 1. 定义参数
-excel_file = r"C:\Users\pc\Downloads\油箱建模算单.xlsx"
-ReservedQuantity_OfModules = [2*2,2*2,10,12,20*5,20*5,6*5] # 模块预留数量
-SerialNumber_KeyPoints = [1]
-for i in range(len(ReservedQuantity_OfModules)):
-    SerialNumber_KeyPoints.append(ReservedQuantity_OfModules[i]*4 + SerialNumber_KeyPoints[i])
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[0] # 全局变量，确定模块之间位置
-
-# 2. 提取参数
-data_table = table_extract(excel_file)
-data_dict = dict(data_table) # 字典转化
 
 # 3. 计算坐标
 cal_point = calculate_keypoint(data_table) # 加载计算模块
@@ -142,9 +156,14 @@ SerialNumber_KeyPoint = SerialNumber_KeyPoints[4] # 修改全局变量，确定�
 OutputList = OutputList + """! 创建新组件箱盖\nCM, TOP, AREA\nASEL, NONE\n"""
 
 # 长轴纵向加强筋建立
-KeyPointList_ReinforcingRib_L_V= cal_point.generate_ReinforcingRib_Long_Vertical()
+KeyPointList_ReinforcingRib_L_V , KeyPointList_ReinforceRib_V_L_UVReinforce= cal_point.generate_ReinforcingRib_Long_Vertical()
+KeyPoint(KeyPointList_ReinforceRib_V_L_UVReinforce) # 加强筋（长轴竖向）底部加强筋坐标点语句输出
+generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[4],SerialNumber_KeyPoint,4) # 生成加强筋（长轴竖向）底部加强筋面语句输出
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[4]+40 # 修改全局变量，确定模块之间位置
+OutputList = OutputList + """! 创建新组件长轴纵向加强筋底部加强筋\nCM, JIAQIANGLEI, AREA\nASEL, NONE\n"""
+
 KeyPoint(KeyPointList_ReinforcingRib_L_V) # 加强筋（长轴竖向）坐标点语句输出
-generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[4],SerialNumber_KeyPoint,4) # 生成加强筋（长轴竖向）面语句输出
+generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[4]+40,SerialNumber_KeyPoint,4) # 生成加强筋（长轴竖向）面语句输出
 SerialNumber_KeyPoint = SerialNumber_KeyPoints[5] # 修改全局变量，确定模块之间位置
 OutputList = OutputList + """! 创建新组件长轴纵向加强筋\n"""
 
@@ -155,15 +174,131 @@ generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[5],SerialNumber_KeyPoint,4
 SerialNumber_KeyPoint = SerialNumber_KeyPoints[6] # 修改全局变量，确定模块之间位置
 OutputList = OutputList + """! 创建新组件长轴横向加强筋\n"""
 
+# 短轴横向加强筋建立
+# KeyPointList_ReinforcingRib_S_H= cal_point.generate_ReinforcingRib_Short_Horizontal()
+
 # 短轴竖向加强筋建立
-KeyPointList_ReinforcingRib_S_V= cal_point.generate_ReinforcingRib_Short_Vertical()
+KeyPointList_ReinforcingRib_S_V , KeyPointList_ReinforceRib_V_S_UVReinforce= cal_point.generate_ReinforcingRib_Short_Vertical()
 KeyPoint(KeyPointList_ReinforcingRib_S_V) # 加强筋（短轴竖向）坐标点语句输出
 generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[6],SerialNumber_KeyPoint,4) # 生成加强筋（短轴竖向）面语句输出
-SerialNumber_KeyPoint = SerialNumber_KeyPoints[7] # 修改全局变量，确定模块之间位置
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[7]-12 # 修改全局变量，确定模块之间位置
 OutputList = OutputList + """! 创建新组件短轴纵向加强筋\n"""
 OutputList = OutputList + """! 创建新组件加强拱\nCM, JIAQIANGGONG, AREA\nASEL, NONE\n"""
+KeyPoint(KeyPointList_ReinforceRib_V_S_UVReinforce) # 加强筋（短轴竖向）坐标点语句输出
+generate_ReinforcRib_BoxC_Area(SerialNumber_KeyPoints[7]-12,SerialNumber_KeyPoint,4) # 生成加强筋（短轴竖向）面语句输出
+SerialNumber_KeyPoint = SerialNumber_KeyPoints[7] # 修改全局变量，确定模块之间位置
+OutputList = OutputList + """! 创建新组件短轴纵向加强筋底部加强筋\nCMSEL,A,JIAQIANGLEI\nCM, JIAQIANGLEI, AREA, APPEND\nASEL, NONE\n"""
 
-OutputList = OutputList + """\nASEL, ALL\nAPLOT\n/PSYMB,ADIR,1"""
+OutputList = OutputList + f"""
+! ========== 分配属性 ==========
+! 箱盖
+CMSEL, S, TOP
+TYPE, 1
+MAT, 1
+REAL, 1
+! 箱顶沿
+CMSEL, S, TOP_RIM
+TYPE, 1
+MAT, 1
+REAL, 2
+! 箱底沿
+CMSEL, S, BOTTOM_RIM
+TYPE, 1
+MAT, 1
+REAL, 2
+! 侧壁
+CMSEL, S, CEBI
+TYPE, 1
+MAT, 1
+REAL, 3
+! 加强拱
+CMSEL, S, JIAQIANGGONG
+TYPE, 1
+MAT, 1
+REAL, 4
+! 箱盖加强筋
+CMSEL, S, XDJIAQIANGJIN
+TYPE, 1
+MAT, 1
+REAL, 5
+! 纵向加强拱下加强筋
+CMSEL, S, JIAQIANGLEI
+TYPE, 1
+MAT, 1
+REAL, 6
+! 线面粘合
+ASEL, ALL
+AOVLAP, ALL
+! 将侧壁面选择为一个组件
+ASEL, NONE
+ASEL, S, LOC, Y, {data_dict["Box_Width"]/2}  ! 选择Y=Box_Width/2的面
+ASEL, A, LOC, Y, -{data_dict["Box_Width"]/2}  ! 选择Y=-Box_Width/2的面
+ASEL, A, LOC, X, {data_dict["Box_Length"]/2}  ! 选择Y=Box_Length/2的面
+ASEL, A, LOC, X, -{data_dict["Box_Length"]/2}  ! 选择Y=-Box_Length/2的面
+CM, CEBI, AREA, APPEND 
+! 将顶面选择为一个组件
+ASEL, NONE
+ASEL, S, LOC, Z, {data_dict["Box_Height"]}  ! 选择Z=Box_Height的面
+CM, TOP, AREA, APPEND 
+ASEL, ALL\nAPLOT\n/PNUM,AREA,1
+! 设置网格参数
+MSHAPE, 0, 2D     ! 首选四边形
+MSHKEY, 0         ! 自由网格
+ESIZE, {data_dict["ESIZE"]}           ! 设置单元尺寸
+AMESH, ALL        ! 划分网格
+! 完成所有网格划分
+ASEL, ALL         ! 选择所有实体
+
+! ============ 求解 ============
+/SOLU
+
+! 1. 施加约束 (使用节点组件)
+! 选择Y=0平面上所有边并施加约束
+LSEL,S,LOC,Z,0 
+DL,ALL,,ALL                     ! 约束所有边上的所有自由度(123=UX,UY,UZ)
+
+
+! 2. 施加压力 (0.1 MPa)
+
+SF, CEBI, PRES, 0.1  ! 对节点组件施加0.1 MPa压力
+SF, TOP, PRES, 0.1  ! 对节点组件施加0.1 MPa压力
+! 3. 求解设置
+! 2. 激活大挠曲选项
+NLGEOM, ON        ! 关键命令：启用大挠曲
+
+! 3. 设置分析类型
+ANTYPE, STATIC    ! 静态分析（最常用）
+
+! 4. 配置非线性求解选项
+NROPT, AUTO       ! 自动选择牛顿-拉普森选项
+AUTOTS, ON        ! 自动时间步长
+TIME, 1           ! 总时间（伪时间）
+NSUBST, 20, 100, 50 ! 子步设置(初始,最大,最小)
+CNVTOL, F, , 0.05, 2 ! 力收敛容差(5%)
+CNVTOL, U, , 0.05, 2    ! 位移收敛5%
+ANTYPE, STATIC      ! 静态分析
+OUTRES, ALL, NONE     ! 关闭所有结果输出
+OUTRES,NSOL,LAST     ! 节点位移
+OUTRES,STRS,LAST
+
+SOLVE               ! 开始求解
+
+! ============ 后处理输出云图 ============
+/POST1
+SET, LAST 
+/SHOW, JPEG, , 0         ! 设置输出为 JPEG 格式
+/GFILE, 1200             ! 设置图像质量（1200 像素）
+ /VIEW, 1, 1, 1, 1   ! 等轴测视图（1,1,1方向）
+PLNSOL, U, SUM           ! 此时会保存图像
+PLESOL, S, EQV
+/SHOW, CLOSE             ! 关闭文件输出
+
+
+CDWRITE, 'ALL', str, 'cdb',
+
+"""
+OutputList = OutputList + """\nASEL, ALL\nAPLOT\n/PNUM,AREA,1"""
+# OutputList = OutputList + """\n/PSYMB,ADIR,1"""
 
 # print(data_table)
 # print(SerialNumber_KeyPoints)

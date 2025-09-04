@@ -7,6 +7,26 @@ class calculate_keypoint:
     def __init__(self, data_table):
         # 1. 一次性提取所有数据项，避免重复提取
         self.data_dict = dict(data_table)
+        # 要查找的字符串
+        targets = ["ReinforcingRib_Long_Horizontal_High_FromTankWall_High",
+                   "ReinforcingRib_Long_Vertical_High_FromTankWall_Low",
+                   "ReinforcingRib_Long_Horizontal_High_FromTankWall_Low",
+                   "ReinforcingRib_Short_Vertical_High_FromTankWall_High",
+                   "ReinforcingRib_Short_Vertical_High_FromTankWall_Low"
+                ]
+        # 新的第二位值
+        new_value = self.data_dict["ReinforcingRib_Long_Vertical_High_FromTankWall_High"]
+        # 遍历二维数组
+        for sublist in data_table:
+        # 检查当前子数组是否包含任何一个目标字符串
+            if any(target in sublist for target in targets):
+                # 确保子数组至少有2个元素
+                if len(sublist) >= 2:
+                    # 修改第二位元素
+                    sublist[1] = new_value
+                else:
+                    print(f"警告：数组 {sublist} 长度不足，无法修改第二位")
+
         
         # 2. 只在需要时提取属性，避免初始化无关变量
         self.length = float(self.data_dict["Box_Length"])
@@ -163,14 +183,12 @@ class calculate_keypoint:
         # 加强筋坐标计算
         # X坐标
         x_points = []
-        if rib_V_num != 1:
-            for i in range(rib_V_num):
-                x_points.append(-self.length/2+ReinforceRib_BoxC_V_D_LToL+ReinforceRib_BoxC_V_RelativeD*i)
-        if rib_Ob_num != 1:
-            for i in range(rib_Ob_num):
-                x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_LToL+ReinforceRib_BoxC_Ob_RelativeD*i)
-            for i in range(rib_Ob_num):
-                x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_RToL+ReinforceRib_BoxC_Ob_RelativeD*i)
+        for i in range(rib_V_num):
+            x_points.append(-self.length/2+ReinforceRib_BoxC_V_D_LToL+ReinforceRib_BoxC_V_RelativeD*i)
+        for i in range(rib_Ob_num):
+            x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_LToL+ReinforceRib_BoxC_Ob_RelativeD*i)
+        for i in range(rib_Ob_num):
+            x_points.append(-self.length/2+ReinforceRib_BoxC_Ob_D_RToL+ReinforceRib_BoxC_Ob_RelativeD*i)
         # Y坐标
         y_points = [
             self.width/2,
@@ -307,8 +325,8 @@ class calculate_keypoint:
         5:加强筋（长轴竖向）坐标二维数组输出\n
         可输出结构：八边形、四边形\n
         最终输出变量：加强筋（长轴竖向）三维坐标\n
-        支持最大数量为20*5\n
-        占用：121-520
+        支持最大数量为20*7\n
+        占用：121-560
         """
         # 自变量提取
         # 高压侧
@@ -346,8 +364,8 @@ class calculate_keypoint:
         y_points = [
             self.y_coords[0],
             self.y_coords[0]+ReinforceRib_L_V_High_FromTW_High,
-            self.y_coords[0],
-            self.y_coords[0]+ReinforceRib_L_V_High_FromTW_Low,
+            -self.y_coords[0],
+            -self.y_coords[0]-ReinforceRib_L_V_High_FromTW_Low,
         ]
         # Z坐标
         z_points = [
@@ -429,7 +447,6 @@ class calculate_keypoint:
                 copy_points = copy.deepcopy(base_points)
                 for i in copy_points:
                     i[0] = i[0] + ReinforceRib_L_V_RelativeD_Low*j
-                    i[1] = -i[1]
                 output_points = output_points + copy_points
         
             # 竖向加强槽下加强筋坐标输出
@@ -460,13 +477,13 @@ class calculate_keypoint:
                 output_points_middle.extend(copy_points)
             elif ReinforceRib_L_V_Symmetry_H == "否":
                 base_points = [
-                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-y_points[0], 0],
-                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-y_points[0], z_points[2]],
-                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,-y_points[1], z_points[3]],
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,y_points[2], 0],
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,y_points[2], z_points[0]],
+                    [x_points[2]+ReinforceRib_V_UVReinforce_Left,y_points[3], z_points[1]],
                     [x_points[2]+ReinforceRib_V_UVReinforce_Left,-self.y_coords[0]-self.BoxEdge_Width, 0],
-                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-y_points[0], 0],
-                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-y_points[0], z_points[2]],
-                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,-y_points[1], z_points[3]],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,y_points[2], 0],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,y_points[2], z_points[0]],
+                    [x_points[3]-ReinforceRib_V_UVReinforce_Right,y_points[3], z_points[1]],
                     [x_points[3]-ReinforceRib_V_UVReinforce_Right,-self.y_coords[0]-self.BoxEdge_Width, 0],
                 ]
                 for j in range(ReinforceRib_L_V_Number_Low):
@@ -474,16 +491,15 @@ class calculate_keypoint:
                     for i in copy_points:
                         i[0] = i[0] + ReinforceRib_L_V_RelativeD_Low*j
                     output_points_middle.extend(copy_points)
-                output_points.extend(output_points_middle)
-        return output_points
+        return output_points , output_points_middle
     
     def generate_ReinforcingRib_Long_Horizontal(self):
         """
         6:加强筋（长轴横向）坐标二维数组输出\n
         可输出结构：八边形、四边形\n
         最终输出变量：加强筋（长轴横向）三维坐标\n
-        支持最大数量为20*5\n
-        占用：521-920
+        支持最大数量为(2*4+9*3)*2*5=350\n
+        占用：561-910
         """
         # 自变量提取
         # 高压侧
@@ -674,7 +690,6 @@ class calculate_keypoint:
             [x_points[13], y_points[1], z_points[0]],
             [x_points[12], y_points[1], z_points[0]],
         ]
-        output_points_middle.extend(base_points)
         # 中间部分高压侧
         for j in range(int(ReinforceRib_L_V_Number_High-1)):
             copy_points = copy.deepcopy(base_points)
@@ -731,13 +746,25 @@ class calculate_keypoint:
         #         i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
         return output_points
 
+    def generate_ReinforcingRib_Short_Horizontal(self):
+        """
+        7:加强筋（短轴横向）坐标二维数组输出\n
+        可输出结构：八边形、四边形\n
+        最终输出变量：加强筋（短轴横向）三维坐标\n
+        支持最大数量为(2*4+2*3)*2*5=140\n
+        占用：911-1050
+        """
+        # 自变量提取
+        # 高压侧
+        ReinforceRib_S_H_Symmetry_H = self.data_dict["ReinforcingRib_Short_Horizontal_Symmetry_High"]
+
     def generate_ReinforcingRib_Short_Vertical(self):
         """
-        7:加强筋（短轴竖向）坐标二维数组输出\n
+        8:加强筋（短轴竖向）坐标二维数组输出\n
         可输出结构：八边形、四边形\n
         最终输出变量：加强筋（短轴竖向）三维坐标\n
-        支持最大数量为6*5\n
-        占用：921-1040
+        支持最大数量为3*2*7\n
+        占用：1051-1092
         """
         # 自变量提取
         # 高压侧
@@ -922,9 +949,8 @@ class calculate_keypoint:
                     for i in copy_points:
                         i[1] = i[1] - ReinforceRib_S_V_RelativeD_Low*j
                     output_points_middle.extend(copy_points)
-                output_points.extend(output_points_middle)
 
-        return output_points
+        return output_points , output_points_middle
     
     
         

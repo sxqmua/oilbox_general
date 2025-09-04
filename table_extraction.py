@@ -4,7 +4,7 @@ def table_extract(excel_file):
     
     sheet_name = "自动建模_导出xlsx"
     start_cell = "B2"
-    end_cell = "C88"
+    end_cell = "C200"
     try:
         # 2. 加载工作簿
         wb = load_workbook(excel_file, data_only=True)
