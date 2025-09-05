@@ -26,6 +26,7 @@ class calculate_keypoint:
                     sublist[1] = new_value
                 else:
                     print(f"警告：数组 {sublist} 长度不足，无法修改第二位")
+        self.data_dict = dict(data_table) # 更新字典
 
         
         # 2. 只在需要时提取属性，避免初始化无关变量
@@ -412,7 +413,6 @@ class calculate_keypoint:
             output_points = output_points + copy_points
         # 输出低压侧坐标
         # 根据是否对称输出不同低压侧坐标点
-        print(ReinforceRib_L_V_Symmetry_H)
         if ReinforceRib_L_V_Symmetry_H == "是":
             copy_points = copy.deepcopy(output_points)
             for i in copy_points:
@@ -504,6 +504,7 @@ class calculate_keypoint:
         # 自变量提取
         # 高压侧
         ReinforceRib_L_H_Symmetry_H = self.data_dict["ReinforcingRib_Long_Horizontal_Symmetry_High"] # 加强筋（长轴横向）是否对称（默认为对称，不对称时未高压侧）
+        ReinforceRib_L_H_HOnBS_High = self.data_dict["ReinforcingRib_Long_Horizontal_HeadOnBothSides_High"] # 加强筋（长轴横向）是否两侧出头
         ReinforceRib_L_H_Number_High = int(self.data_dict["ReinforcingRib_Long_Horizontal_Number_High"]) # 加强筋（长轴横向）数量
         ReinforceRib_L_H_LOfTheTB_High = float(self.data_dict["ReinforcingRib_Long_Horizontal_LengthOfTheTopBase_High"]) # 加强筋（长轴横向）上底总长
         ReinforceRib_L_H_LOfTheDB_High = float(self.data_dict["ReinforcingRib_Long_Horizontal_LengthOfTheDownBase_High"]) # 加强筋（长轴横向）下底总长
@@ -536,9 +537,12 @@ class calculate_keypoint:
         ReinforceRib_L_V_RelativeD_Low = float(self.data_dict["ReinforcingRib_Long_Vertical_RelativeDistance_Low"]) # 加强筋（长轴竖向）多个加强筋相对距离
         
         # 判断是否存在加强筋（长轴横向）
-        if ReinforceRib_L_H_Number_High == 0:
+        if ReinforceRib_L_H_Number_High == 0 :
             return []
-        
+        elif ReinforceRib_L_V_Number_High == 1 and ReinforceRib_L_H_HOnBS_High == "无":
+            raise ValueError("当加强筋（长轴横向）数量不为0时，必须满足加强筋（长轴竖向）数量大于1或者加强筋（长轴横向）为某侧出头！")
+            
+            
         # 加强筋坐标计算
         # X坐标
         x_points = [
@@ -576,7 +580,7 @@ class calculate_keypoint:
             ReinforceRib_L_H_D_BottomAEdge_Low+ReinforceRib_L_H_Width_Low,
         ]
         # 生成加强筋坐标
-        base_points = [
+        base_points_Left = [
             [x_points[0],y_points[0], z_points[0]],
             [x_points[1],y_points[1], z_points[0]],
             [x_points[2],y_points[1], z_points[0]],
@@ -594,7 +598,8 @@ class calculate_keypoint:
             [x_points[1],y_points[1], z_points[1]],
             [x_points[2],y_points[1], z_points[1]],
             [x_points[2],y_points[1], z_points[0]],
-            
+        ]
+        base_points_Right = [
             [x_points[8],y_points[0], z_points[0]],
             [x_points[6],y_points[0], z_points[0]],
             [x_points[6],y_points[1], z_points[0]],
@@ -614,66 +619,87 @@ class calculate_keypoint:
             [x_points[7],y_points[1], z_points[1]],
         ]
         output_points = []
-        # 输出高压侧坐标
-        for j in range(int(ReinforceRib_L_H_Number_High)):
-            copy_points = copy.deepcopy(base_points)
-            for i in copy_points:
-                i[2] = i[2] + ReinforceRib_L_H_RelativeD_High*j
-            output_points = output_points + copy_points
-        # 输出低压侧坐标
-        # 根据是否对称输出不同低压侧坐标点
-        if ReinforceRib_L_H_Symmetry_H == "是":
-            copy_points = copy.deepcopy(output_points)
-            for i in copy_points:
-                i[1] = -i[1]
-            output_points = output_points + copy_points
-        elif ReinforceRib_L_H_Symmetry_H == "否":
-            base_points = [
-                [x_points[3],y_points[2], z_points[2]],
-                [x_points[5],y_points[2], z_points[2]],
-                [x_points[5],y_points[3], z_points[2]],
-                [x_points[4],y_points[3], z_points[2]],
-                [x_points[3],y_points[2], z_points[3]],
-                [x_points[4],y_points[3], z_points[3]],
-                [x_points[5],y_points[3], z_points[3]],
-                [x_points[5],y_points[2], z_points[3]],
-                
-                [x_points[3],y_points[2], z_points[2]],
-                [x_points[4],y_points[3], z_points[2]],
-                [x_points[4],y_points[3], z_points[3]],
-                [x_points[3],y_points[2], z_points[3]],
-                [x_points[4],y_points[3], z_points[2]],
-                [x_points[5],y_points[3], z_points[2]],
-                [x_points[5],y_points[3], z_points[3]],
-                [x_points[4],y_points[3], z_points[3]],
-                
-                [x_points[11],y_points[2], z_points[2]],
-                [x_points[10],y_points[3], z_points[2]],
-                [x_points[9],y_points[3], z_points[2]],
-                [x_points[9],y_points[2], z_points[2]],
-                [x_points[11],y_points[2], z_points[3]],
-                [x_points[9],y_points[2], z_points[3]],
-                [x_points[9],y_points[3], z_points[3]],
-                [x_points[10],y_points[3], z_points[3]],
-                
-                [x_points[11],y_points[2], z_points[2]],
-                [x_points[11],y_points[2], z_points[3]],
-                [x_points[10],y_points[3], z_points[3]],
-                [x_points[10],y_points[3], z_points[2]],
-                [x_points[10],y_points[3], z_points[2]],
-                [x_points[10],y_points[3], z_points[3]],
-                [x_points[9],y_points[3], z_points[3]],
-                [x_points[9],y_points[3], z_points[2]],
-            ]
-            for j in range(int(ReinforceRib_L_H_Number_Low)):
+        if ReinforceRib_L_H_HOnBS_High == "两侧":
+            base_points = base_points_Left + base_points_Right
+        elif ReinforceRib_L_H_HOnBS_High == "右侧":
+            base_points = base_points_Right
+        elif ReinforceRib_L_H_HOnBS_High == "左侧":
+            base_points = base_points_Left
+        elif ReinforceRib_L_H_HOnBS_High == "无":
+            base_points = []
+            
+        if base_points != []:
+            # 输出高压侧坐标
+            for j in range(int(ReinforceRib_L_H_Number_High)):
                 copy_points = copy.deepcopy(base_points)
                 for i in copy_points:
-                    i[2] = i[2] + ReinforceRib_L_H_RelativeD_Low*j
+                    i[2] = i[2] + ReinforceRib_L_H_RelativeD_High*j
+                output_points = output_points + copy_points
+            # 输出低压侧坐标
+            # 根据是否对称输出不同低压侧坐标点
+            if ReinforceRib_L_H_Symmetry_H == "是":
+                copy_points = copy.deepcopy(output_points)
+                for i in copy_points:
                     i[1] = -i[1]
                 output_points = output_points + copy_points
+            elif ReinforceRib_L_H_Symmetry_H == "否":
+                base_points_Left = [
+                    [x_points[3],y_points[2], z_points[2]],
+                    [x_points[5],y_points[2], z_points[2]],
+                    [x_points[5],y_points[3], z_points[2]],
+                    [x_points[4],y_points[3], z_points[2]],
+                    [x_points[3],y_points[2], z_points[3]],
+                    [x_points[4],y_points[3], z_points[3]],
+                    [x_points[5],y_points[3], z_points[3]],
+                    [x_points[5],y_points[2], z_points[3]],
+                    
+                    [x_points[3],y_points[2], z_points[2]],
+                    [x_points[4],y_points[3], z_points[2]],
+                    [x_points[4],y_points[3], z_points[3]],
+                    [x_points[3],y_points[2], z_points[3]],
+                    [x_points[4],y_points[3], z_points[2]],
+                    [x_points[5],y_points[3], z_points[2]],
+                    [x_points[5],y_points[3], z_points[3]],
+                    [x_points[4],y_points[3], z_points[3]],
+                ]
+                base_points_Right = [
+                    [x_points[11],y_points[2], z_points[2]],
+                    [x_points[10],y_points[3], z_points[2]],
+                    [x_points[9],y_points[3], z_points[2]],
+                    [x_points[9],y_points[2], z_points[2]],
+                    [x_points[11],y_points[2], z_points[3]],
+                    [x_points[9],y_points[2], z_points[3]],
+                    [x_points[9],y_points[3], z_points[3]],
+                    [x_points[10],y_points[3], z_points[3]],
+                    
+                    [x_points[11],y_points[2], z_points[2]],
+                    [x_points[11],y_points[2], z_points[3]],
+                    [x_points[10],y_points[3], z_points[3]],
+                    [x_points[10],y_points[3], z_points[2]],
+                    [x_points[10],y_points[3], z_points[2]],
+                    [x_points[10],y_points[3], z_points[3]],
+                    [x_points[9],y_points[3], z_points[3]],
+                    [x_points[9],y_points[3], z_points[2]],
+                ]
+                if ReinforceRib_L_H_HOnBS_High == "两侧":
+                    base_points = base_points_Left + base_points_Right
+                elif ReinforceRib_L_H_HOnBS_High == "右侧":
+                    base_points = base_points_Right
+                elif ReinforceRib_L_H_HOnBS_High == "左侧":
+                    base_points = base_points_Left
+                elif ReinforceRib_L_H_HOnBS_High == "无":
+                    base_points = []
+                for j in range(int(ReinforceRib_L_H_Number_Low)):
+                    copy_points = copy.deepcopy(base_points)
+                    for i in copy_points:
+                        i[2] = i[2] + ReinforceRib_L_H_RelativeD_Low*j
+                        i[1] = -i[1]
+                    output_points = output_points + copy_points
                 
-        # 输出中间段坐标
         output_points_middle = []
+        output_points_middle_1 = []
+        output_points_middle_2 = []
+        # 输出中间段坐标
         base_points = [
             [x_points[12], y_points[0], z_points[0]],
             [x_points[12], y_points[1], z_points[0]],
@@ -690,25 +716,31 @@ class calculate_keypoint:
             [x_points[13], y_points[1], z_points[0]],
             [x_points[12], y_points[1], z_points[0]],
         ]
+        if ReinforceRib_L_V_Number_High == 1 and ReinforceRib_L_V_Symmetry_H == "是":
+            return output_points
+        elif ReinforceRib_L_V_Number_High == 1 and ReinforceRib_L_V_Symmetry_H == "否":
+            if ReinforceRib_L_V_Number_Low == 1:
+                return output_points
+                
         # 中间部分高压侧
-        for j in range(int(ReinforceRib_L_V_Number_High-1)):
-            copy_points = copy.deepcopy(base_points)
-            for i in copy_points:
-                i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
-            output_points_middle = output_points_middle + copy_points
-        for j in range(1,int(ReinforceRib_L_H_Number_High)):
-            copy_points = copy.deepcopy(output_points_middle)
-            for i in copy_points:
-                i[2] = i[2] + ReinforceRib_L_H_RelativeD_High*j
-            output_points_middle = output_points_middle + copy_points
+        if ReinforceRib_L_V_Number_High > 1:
+            for j in range(int(ReinforceRib_L_V_Number_High-1)):
+                copy_points = copy.deepcopy(base_points)
+                for i in copy_points:
+                    i[0] = i[0] + ReinforceRib_L_V_RelativeD_High*j
+                output_points_middle = output_points_middle + copy_points
+            for j in range(1,int(ReinforceRib_L_H_Number_High)):
+                copy_points = copy.deepcopy(output_points_middle)
+                for i in copy_points:
+                    i[2] = i[2] + ReinforceRib_L_H_RelativeD_High*j
+                output_points_middle = output_points_middle + copy_points
         # 中间部分低压侧
         if ReinforceRib_L_V_Symmetry_H == "是":
             copy_points = copy.deepcopy(output_points_middle)
             for i in copy_points:
                 i[1] = -i[1]
-            output_points = output_points_middle + copy_points
-        elif ReinforceRib_L_V_Symmetry_H == "否":
-            output_points_middle_1 = []
+            output_points = output_points + output_points_middle + copy_points
+        elif ReinforceRib_L_V_Symmetry_H == "否" and ReinforceRib_L_V_Number_Low > 1:
             base_points = [
                 [x_points[14], y_points[2], z_points[2]],
                 [x_points[15], y_points[2], z_points[2]],
@@ -732,7 +764,6 @@ class calculate_keypoint:
                 for i in copy_points:
                     i[0] = i[0] + ReinforceRib_L_V_RelativeD_Low*j
                 output_points_middle_1 = output_points_middle_1 + copy_points
-                output_points_middle_2 = []
             for j in range(1,int(ReinforceRib_L_H_Number_Low)):
                 copy_points = copy.deepcopy(output_points_middle_1)
                 for i in copy_points:

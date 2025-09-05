@@ -1,0 +1,1809 @@
+
+ Ansys Mechanical Enterprise                       
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2025 R2          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2025 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2025 R2 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys, Inc. License Manager 2025 R2 
+ Aqwa 2025 R2
+ Core WB Files 2025 R2   
+ Autodyn 2025 R2 
+ Customization Files for User Programmable Features 2025 R2  
+ ICEM CFD 2025 R2
+ LS-DYNA 2025 R2 
+ Material Calibration App 2025 R2
+ Material Designer 2025 R2   
+ Mechanical Products 2025 R2 
+ Motion 2025 R2  
+ Sherlock 2025 R2
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = LIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  INPUT FILE NAME              = F:\work\VSCODE\oilbox_general\auto_test\output.mac
+  OUTPUT FILE NAME             = F:\work\VSCODE\oilbox_general\auto_test\output.mac_output.txt
+
+ RELEASE= 2025 R2              BUILD= 25.2      UP20250519   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file0  00:36:04  SEP 05, 2025 CP=      0.078
+
+     1  FINISH              ! 结束当前模块 xin  
+     2  /CLEAR , START       ! 清除数据库，开始新的分析 
+     3  !========== 定义参数 (Preprocessor) ==========  
+     4  str = '%z%h=%h%T1=%T1%T2=%T2%'  
+     5  ! ===== 1. 设置工作目录和文件名 =====   
+     6  /MKDIR, 'D:/result/z =%z% h=%h% T1=%T1% T2=%T2%'     ! 创建项目目录（如不存在） 
+     7  /CWD,'D:/result/z =%z% h=%h% T1=%T1% T2=%T2%'        ! 设置工作目录 
+     8  /FILNAME,str, 1     ! 设置文件名前缀
+     9  ! ========== 前处理 (Preprocessor) ==========   
+    10  /PREP7              ! 进入前处理器  
+    11  ! 1. 定义材料属性 (钢)  
+    12  MP, EX, 1, 210000   ! 杨氏模量 (Pa) 
+    13  MP, PRXY, 1, 0.3    ! 泊松比
+    14  MP, DENS, 1, 7.85e-9   ! 密度 (kg/m3)   
+    15      
+    16  ! 2. 定义单元类型 (壳单元SHELL181)  
+    17  ET, 1, SHELL181     ! 选择壳单元类型
+    18  KEYOPT, 1, 8, 2     ! 设置存储应力和应变
+    19      
+    20  ! 3. 定义不同厚度的实常 
+    21  ! 箱顶厚度  
+    22  R, 1, 8 
+    23  ! 箱沿及箱顶箱沿厚度
+    24  R, 2, 8 
+    25  ! 侧壁厚度  
+    26  R, 3, 8 
+    27  ! 加强拱厚度
+    28  R, 4, 8 
+    29  ! 箱顶加强筋厚度
+    30  R, 5, 6 
+    31  ! 竖向加强槽下加强筋厚度
+    32  R, 6, 8 
+    33      K , 1 , -2500.0 , 1000.0 , 0
+    34  K , 2 , 2500.0 , 1000.0 , 0 
+    35  K , 3 , 2500.0 , -1000.0 , 0
+    36  K , 4 , -2500.0 , -1000.0 , 0   
+    37  K , 5 , -2500.0 , 1000.0 , 3000.0   
+    38  K , 6 , 2500.0 , 1000.0 , 3000.0
+    39  K , 7 , 2500.0 , -1000.0 , 3000.0   
+    40  K , 8 , -2500.0 , -1000.0 , 3000.0  
+    41  A , 5 , 6 , 2 , 1   
+    42  A , 6 , 7 , 3 , 2   
+    43  A , 7 , 8 , 4 , 3   
+    44  A , 8 , 5 , 1 , 4   
+    45  ASEL, ALL   
+    46  ! 创建新组件侧壁
+    47  CM, CEBI, AREA  
+    48  ASEL, NONE  
+    49  K , 17 , -2700.0 , 1200.0 , 0   
+    50  K , 18 , 2700.0 , 1200.0 , 0
+    51  K , 19 , 2700.0 , -1200.0 , 0   
+    52  K , 20 , -2700.0 , -1200.0 , 0  
+    53  K , 21 , -2700.0 , 1200.0 , 3000.0  
+    54  K , 22 , 2700.0 , 1200.0 , 3000.0   
+    55  K , 23 , 2700.0 , -1200.0 , 3000.0  
+    56  K , 24 , -2700.0 , -1200.0 , 3000.0 
+    57  A , 1, 2, 3, 4  
+    58  BOTTOM_AREA = _RETURN   
+    59  A , 17,18,19,20 
+    60  RIM_AREA = _RETURN  
+    61  ASBA, RIM_AREA, BOTTOM_AREA 
+    62  ! 创建新组件箱底沿  
+    63  CM, BOTTOM_RIM, AREA
+    64  ASEL, NONE  
+    65  A , 8,7,6,5 
+    66  UP_AREA = _RETURN   
+    67  A , 24,23,22,21 
+    68  UP_RIM_AREA = _RETURN   
+    69  ASBA, UP_RIM_AREA, UP_AREA  
+    70  ! 创建新组件箱盖沿  
+    71  CM, TOP_RIM, AREA   
+    72  ASEL, NONE  
+    73  K , 33 , 517.0 , 1000.0 , 3000.0
+    74  K , 34 , 517.0 , -1000.0 , 3000.0   
+    75  K , 35 , 517.0 , -1000.0 , 3120.0   
+    76  K , 36 , 517.0 , 1000.0 , 3120.0
+    77  K , 37 , -1300.0 , 1000.0 , 3000.0  
+    78  K , 38 , -1100.0 , -1000.0 , 3000.0 
+    79  K , 39 , -1100.0 , -1000.0 , 3120.0 
+    80  K , 40 , -1300.0 , 1000.0 , 3120.0  
+    81  A , 33 , 34 , 35 , 36   
+    82  A , 37 , 38 , 39 , 40   
+    83  ! 创建新组件箱盖加强筋  
+    84  CM, XDJIAQIANGJIN, AREA 
+    85  ASEL, NONE  
+    86  K , 73 , -2500.0 , 1000.0 , 3000.0  
+    87  K , 74 , -2500.0 , -1000.0 , 3000.0 
+    88  K , 75 , -1100.0 , -1000.0 , 3000.0 
+    89  K , 76 , -1300.0 , 1000.0 , 3000.0  
+    90  K , 77 , 517.0 , 1000.0 , 3000.0
+    91  K , 78 , 517.0 , -1000.0 , 3000.0   
+    92  K , 79 , 2500.0 , -1000.0 , 3000.0  
+    93  K , 80 , 2500.0 , 1000.0 , 3000.0   
+    94  K , 81 , -1300.0 , 1000.0 , 3000.0  
+    95  K , 82 , -1100.0 , -1000.0 , 3000.0 
+    96  K , 83 , 517.0 , -1000.0 , 3000.0   
+    97  K , 84 , 517.0 , 1000.0 , 3000.0
+    98  A , 73 , 74 , 75 , 76   
+    99  A , 77 , 78 , 79 , 80   
+   100  A , 81 , 82 , 83 , 84   
+   101  ! 创建新组件箱盖
+   102  CM, TOP, AREA   
+   103  ASEL, NONE  
+   104  K , 121 , -1690.0 , 1000.0 , 0  
+   105  K , 122 , -1690.0 , 1000.0 , 200.0  
+   106  K , 123 , -1690.0 , 1400.0 , 400.0  
+   107  K , 124 , -1690.0 , 1200.0 , 0  
+   108  K , 125 , -1310.0 , 1000.0 , 0  
+   109  K , 126 , -1310.0 , 1000.0 , 200.0  
+   110  K , 127 , -1310.0 , 1400.0 , 400.0  
+   111  K , 128 , -1310.0 , 1200.0 , 0  
+   112  K , 129 , -890.0 , 1000.0 , 0   
+   113  K , 130 , -890.0 , 1000.0 , 200.0   
+   114  K , 131 , -890.0 , 1400.0 , 400.0   
+   115  K , 132 , -890.0 , 1200.0 , 0   
+   116  K , 133 , -510.0 , 1000.0 , 0   
+   117  K , 134 , -510.0 , 1000.0 , 200.0   
+   118  K , 135 , -510.0 , 1400.0 , 400.0   
+   119  K , 136 , -510.0 , 1200.0 , 0   
+   120  K , 137 , -1690.0 , -1000.0 , 0 
+   121  K , 138 , -1690.0 , -1000.0 , 200.0 
+   122  K , 139 , -1690.0 , -1400.0 , 400.0 
+   123  K , 140 , -1690.0 , -1200.0 , 0 
+   124  K , 141 , -1310.0 , -1000.0 , 0 
+   125  K , 142 , -1310.0 , -1000.0 , 200.0 
+   126  K , 143 , -1310.0 , -1400.0 , 400.0 
+   127  K , 144 , -1310.0 , -1200.0 , 0 
+   128  K , 145 , -890.0 , -1000.0 , 0  
+   129  K , 146 , -890.0 , -1000.0 , 200.0  
+   130  K , 147 , -890.0 , -1400.0 , 400.0  
+   131  K , 148 , -890.0 , -1200.0 , 0  
+   132  K , 149 , -510.0 , -1000.0 , 0  
+   133  K , 150 , -510.0 , -1000.0 , 200.0  
+   134  K , 151 , -510.0 , -1400.0 , 400.0  
+   135  K , 152 , -510.0 , -1200.0 , 0  
+   136  A , 121 , 122 , 123 , 124   
+   137  A , 125 , 126 , 127 , 128   
+   138  A , 129 , 130 , 131 , 132   
+   139  A , 133 , 134 , 135 , 136   
+   140  A , 137 , 138 , 139 , 140   
+   141  A , 141 , 142 , 143 , 144   
+   142  A , 145 , 146 , 147 , 148   
+   143  A , 149 , 150 , 151 , 152   
+   144  ! 创建新组件长轴纵向加强筋底部加强筋
+   145  CM, JIAQIANGLEI, AREA   
+   146  ASEL, NONE  
+   147  K , 161 , -1700.0 , 1000.0 , 2700.0 
+   148  K , 162 , -1700.0 , 1400.0 , 2500.0 
+   149  K , 163 , -1700.0 , 1400.0 , 400.0  
+   150  K , 164 , -1700.0 , 1000.0 , 200.0  
+   151  K , 165 , -1300.0 , 1000.0 , 2700.0 
+   152  K , 166 , -1300.0 , 1000.0 , 200.0  
+   153  K , 167 , -1300.0 , 1400.0 , 400.0  
+   154  K , 168 , -1300.0 , 1400.0 , 2500.0 
+   155  K , 169 , -1700.0 , 1400.0 , 2500.0 
+   156  K , 170 , -1300.0 , 1400.0 , 2500.0 
+   157  K , 171 , -1300.0 , 1400.0 , 400.0  
+   158  K , 172 , -1700.0 , 1400.0 , 400.0  
+   159  K , 173 , -1700.0 , 1400.0 , 400.0  
+   160  K , 174 , -1300.0 , 1400.0 , 400.0  
+   161  K , 175 , -1300.0 , 1000.0 , 200.0  
+   162  K , 176 , -1700.0 , 1000.0 , 200.0  
+   163  K , 177 , -1700.0 , 1400.0 , 2500.0 
+   164  K , 178 , -1700.0 , 1000.0 , 2700.0 
+   165  K , 179 , -1300.0 , 1000.0 , 2700.0 
+   166  K , 180 , -1300.0 , 1400.0 , 2500.0 
+   167  K , 181 , -900.0 , 1000.0 , 2700.0  
+   168  K , 182 , -900.0 , 1400.0 , 2500.0  
+   169  K , 183 , -900.0 , 1400.0 , 400.0   
+   170  K , 184 , -900.0 , 1000.0 , 200.0   
+   171  K , 185 , -500.0 , 1000.0 , 2700.0  
+   172  K , 186 , -500.0 , 1000.0 , 200.0   
+   173  K , 187 , -500.0 , 1400.0 , 400.0   
+   174  K , 188 , -500.0 , 1400.0 , 2500.0  
+   175  K , 189 , -900.0 , 1400.0 , 2500.0  
+   176  K , 190 , -500.0 , 1400.0 , 2500.0  
+   177  K , 191 , -500.0 , 1400.0 , 400.0   
+   178  K , 192 , -900.0 , 1400.0 , 400.0   
+   179  K , 193 , -900.0 , 1400.0 , 400.0   
+   180  K , 194 , -500.0 , 1400.0 , 400.0   
+   181  K , 195 , -500.0 , 1000.0 , 200.0   
+   182  K , 196 , -900.0 , 1000.0 , 200.0   
+   183  K , 197 , -900.0 , 1400.0 , 2500.0  
+   184  K , 198 , -900.0 , 1000.0 , 2700.0  
+   185  K , 199 , -500.0 , 1000.0 , 2700.0  
+   186  K , 200 , -500.0 , 1400.0 , 2500.0  
+   187  K , 201 , -1700.0 , -1000.0 , 2700.0
+   188  K , 202 , -1700.0 , -1400.0 , 2500.0
+   189  K , 203 , -1700.0 , -1400.0 , 400.0 
+   190  K , 204 , -1700.0 , -1000.0 , 200.0 
+   191  K , 205 , -1300.0 , -1000.0 , 2700.0
+   192  K , 206 , -1300.0 , -1000.0 , 200.0 
+   193  K , 207 , -1300.0 , -1400.0 , 400.0 
+   194  K , 208 , -1300.0 , -1400.0 , 2500.0
+   195  K , 209 , -1700.0 , -1400.0 , 2500.0
+   196  K , 210 , -1300.0 , -1400.0 , 2500.0
+   197  K , 211 , -1300.0 , -1400.0 , 400.0 
+   198  K , 212 , -1700.0 , -1400.0 , 400.0 
+   199  K , 213 , -1700.0 , -1400.0 , 400.0 
+   200  K , 214 , -1300.0 , -1400.0 , 400.0 
+   201  K , 215 , -1300.0 , -1000.0 , 200.0 
+   202  K , 216 , -1700.0 , -1000.0 , 200.0 
+   203  K , 217 , -1700.0 , -1400.0 , 2500.0
+   204  K , 218 , -1700.0 , -1000.0 , 2700.0
+   205  K , 219 , -1300.0 , -1000.0 , 2700.0
+   206  K , 220 , -1300.0 , -1400.0 , 2500.0
+   207  K , 221 , -900.0 , -1000.0 , 2700.0 
+   208  K , 222 , -900.0 , -1400.0 , 2500.0 
+   209  K , 223 , -900.0 , -1400.0 , 400.0  
+   210  K , 224 , -900.0 , -1000.0 , 200.0  
+   211  K , 225 , -500.0 , -1000.0 , 2700.0 
+   212  K , 226 , -500.0 , -1000.0 , 200.0  
+   213  K , 227 , -500.0 , -1400.0 , 400.0  
+   214  K , 228 , -500.0 , -1400.0 , 2500.0 
+   215  K , 229 , -900.0 , -1400.0 , 2500.0 
+   216  K , 230 , -500.0 , -1400.0 , 2500.0 
+   217  K , 231 , -500.0 , -1400.0 , 400.0  
+   218  K , 232 , -900.0 , -1400.0 , 400.0  
+   219  K , 233 , -900.0 , -1400.0 , 400.0  
+   220  K , 234 , -500.0 , -1400.0 , 400.0  
+   221  K , 235 , -500.0 , -1000.0 , 200.0  
+   222  K , 236 , -900.0 , -1000.0 , 200.0  
+   223  K , 237 , -900.0 , -1400.0 , 2500.0 
+   224  K , 238 , -900.0 , -1000.0 , 2700.0 
+   225  K , 239 , -500.0 , -1000.0 , 2700.0 
+   226  K , 240 , -500.0 , -1400.0 , 2500.0 
+   227  A , 161 , 162 , 163 , 164   
+   228  A , 165 , 166 , 167 , 168   
+   229  A , 169 , 170 , 171 , 172   
+   230  A , 173 , 174 , 175 , 176   
+   231  A , 177 , 178 , 179 , 180   
+   232  A , 181 , 182 , 183 , 184   
+   233  A , 185 , 186 , 187 , 188   
+   234  A , 189 , 190 , 191 , 192   
+   235  A , 193 , 194 , 195 , 196   
+   236  A , 197 , 198 , 199 , 200   
+   237  A , 201 , 202 , 203 , 204   
+   238  A , 205 , 206 , 207 , 208   
+   239  A , 209 , 210 , 211 , 212   
+   240  A , 213 , 214 , 215 , 216   
+   241  A , 217 , 218 , 219 , 220   
+   242  A , 221 , 222 , 223 , 224   
+   243  A , 225 , 226 , 227 , 228   
+   244  A , 229 , 230 , 231 , 232   
+   245  A , 233 , 234 , 235 , 236   
+   246  A , 237 , 238 , 239 , 240   
+   247  ! 创建新组件长轴纵向加强筋  
+   248  K , 681 , -1900.0 , 1000.0 , 600.0  
+   249  K , 682 , -1800.0 , 1400.0 , 600.0  
+   250  K , 683 , -1700.0 , 1400.0 , 600.0  
+   251  K , 684 , -1700.0 , 1000.0 , 600.0  
+   252  K , 685 , -1900.0 , 1000.0 , 1100.0 
+   253  K , 686 , -1700.0 , 1000.0 , 1100.0 
+   254  K , 687 , -1700.0 , 1400.0 , 1100.0 
+   255  K , 688 , -1800.0 , 1400.0 , 1100.0 
+   256  K , 689 , -1900.0 , 1000.0 , 600.0  
+   257  K , 690 , -1900.0 , 1000.0 , 1100.0 
+   258  K , 691 , -1800.0 , 1400.0 , 1100.0 
+   259  K , 692 , -1800.0 , 1400.0 , 600.0  
+   260  K , 693 , -1800.0 , 1400.0 , 600.0  
+   261  K , 694 , -1800.0 , 1400.0 , 1100.0 
+   262  K , 695 , -1700.0 , 1400.0 , 1100.0 
+   263  K , 696 , -1700.0 , 1400.0 , 600.0  
+   264  K , 697 , -1900.0 , -1000.0 , 600.0 
+   265  K , 698 , -1800.0 , -1400.0 , 600.0 
+   266  K , 699 , -1700.0 , -1400.0 , 600.0 
+   267  K , 700 , -1700.0 , -1000.0 , 600.0 
+   268  K , 701 , -1900.0 , -1000.0 , 1100.0
+   269  K , 702 , -1700.0 , -1000.0 , 1100.0
+   270  K , 703 , -1700.0 , -1400.0 , 1100.0
+   271  K , 704 , -1800.0 , -1400.0 , 1100.0
+   272  K , 705 , -1900.0 , -1000.0 , 600.0 
+   273  K , 706 , -1900.0 , -1000.0 , 1100.0
+   274  K , 707 , -1800.0 , -1400.0 , 1100.0
+   275  K , 708 , -1800.0 , -1400.0 , 600.0 
+   276  K , 709 , -1800.0 , -1400.0 , 600.0 
+   277  K , 710 , -1800.0 , -1400.0 , 1100.0
+   278  K , 711 , -1700.0 , -1400.0 , 1100.0
+   279  K , 712 , -1700.0 , -1400.0 , 600.0 
+   280  K , 713 , -1300.0 , 1000.0 , 600.0  
+   281  K , 714 , -1300.0 , 1400.0 , 600.0  
+   282  K , 715 , -900.0 , 1400.0 , 600.0   
+   283  K , 716 , -900.0 , 1000.0 , 600.0   
+   284  K , 717 , -1300.0 , 1000.0 , 1100.0 
+   285  K , 718 , -900.0 , 1000.0 , 1100.0  
+   286  K , 719 , -900.0 , 1400.0 , 1100.0  
+   287  K , 720 , -1300.0 , 1400.0 , 1100.0 
+   288  K , 721 , -1300.0 , 1400.0 , 1100.0 
+   289  K , 722 , -900.0 , 1400.0 , 1100.0  
+   290  K , 723 , -900.0 , 1400.0 , 600.0   
+   291  K , 724 , -1300.0 , 1400.0 , 600.0  
+   292  K , 725 , -1300.0 , -1000.0 , 600.0 
+   293  K , 726 , -1300.0 , -1400.0 , 600.0 
+   294  K , 727 , -900.0 , -1400.0 , 600.0  
+   295  K , 728 , -900.0 , -1000.0 , 600.0  
+   296  K , 729 , -1300.0 , -1000.0 , 1100.0
+   297  K , 730 , -900.0 , -1000.0 , 1100.0 
+   298  K , 731 , -900.0 , -1400.0 , 1100.0 
+   299  K , 732 , -1300.0 , -1400.0 , 1100.0
+   300  K , 733 , -1300.0 , -1400.0 , 1100.0
+   301  K , 734 , -900.0 , -1400.0 , 1100.0 
+   302  K , 735 , -900.0 , -1400.0 , 600.0  
+   303  K , 736 , -1300.0 , -1400.0 , 600.0 
+   304  A , 681 , 682 , 683 , 684   
+   305  A , 685 , 686 , 687 , 688   
+   306  A , 689 , 690 , 691 , 692   
+   307  A , 693 , 694 , 695 , 696   
+   308  A , 697 , 698 , 699 , 700   
+   309  A , 701 , 702 , 703 , 704   
+   310  A , 705 , 706 , 707 , 708   
+   311  A , 709 , 710 , 711 , 712   
+   312  A , 713 , 714 , 715 , 716   
+   313  A , 717 , 718 , 719 , 720   
+   314  A , 721 , 722 , 723 , 724   
+   315  A , 725 , 726 , 727 , 728   
+   316  A , 729 , 730 , 731 , 732   
+   317  A , 733 , 734 , 735 , 736   
+   318  ! 创建新组件长轴横向加强筋  
+   319  K , 1081 , -2500.0 , 100.0 , 2700.0 
+   320  K , 1082 , -2900.0 , 100.0 , 2500.0 
+   321  K , 1083 , -2900.0 , 100.0 , 400.0  
+   322  K , 1084 , -2500.0 , 100.0 , 200.0  
+   323  K , 1085 , -2500.0 , 400.0 , 2700.0 
+   324  K , 1086 , -2500.0 , 400.0 , 200.0  
+   325  K , 1087 , -2900.0 , 400.0 , 400.0  
+   326  K , 1088 , -2900.0 , 400.0 , 2500.0 
+   327  K , 1089 , -2500.0 , 100.0 , 2700.0 
+   328  K , 1090 , -2500.0 , 400.0 , 2700.0 
+   329  K , 1091 , -2900.0 , 400.0 , 2500.0 
+   330  K , 1092 , -2900.0 , 100.0 , 2500.0 
+   331  K , 1093 , -2500.0 , 100.0 , 200.0  
+   332  K , 1094 , -2900.0 , 100.0 , 400.0  
+   333  K , 1095 , -2900.0 , 400.0 , 400.0  
+   334  K , 1096 , -2500.0 , 400.0 , 200.0  
+   335  K , 1097 , -2900.0 , 100.0 , 400.0  
+   336  K , 1098 , -2900.0 , 100.0 , 2500.0 
+   337  K , 1099 , -2900.0 , 400.0 , 2500.0 
+   338  K , 1100 , -2900.0 , 400.0 , 400.0  
+   339  K , 1101 , 2500.0 , 400.0 , 2700.0  
+   340  K , 1102 , 2900.0 , 400.0 , 2500.0  
+   341  K , 1103 , 2900.0 , 400.0 , 400.0   
+   342  K , 1104 , 2500.0 , 400.0 , 200.0   
+   343  K , 1105 , 2500.0 , 100.0 , 2700.0  
+   344  K , 1106 , 2500.0 , 100.0 , 200.0   
+   345  K , 1107 , 2900.0 , 100.0 , 400.0   
+   346  K , 1108 , 2900.0 , 100.0 , 2500.0  
+   347  K , 1109 , 2500.0 , 100.0 , 200.0   
+   348  K , 1110 , 2500.0 , 400.0 , 200.0   
+   349  K , 1111 , 2900.0 , 400.0 , 400.0   
+   350  K , 1112 , 2900.0 , 100.0 , 400.0   
+   351  K , 1113 , 2500.0 , 100.0 , 2700.0  
+   352  K , 1114 , 2900.0 , 100.0 , 2500.0  
+   353  K , 1115 , 2900.0 , 400.0 , 2500.0  
+   354  K , 1116 , 2500.0 , 400.0 , 2700.0  
+   355  K , 1117 , 2900.0 , 100.0 , 2500.0  
+   356  K , 1118 , 2900.0 , 100.0 , 400.0   
+   357  K , 1119 , 2900.0 , 400.0 , 400.0   
+   358  K , 1120 , 2900.0 , 400.0 , 2500.0  
+   359  A , 1081 , 1082 , 1083 , 1084   
+   360  A , 1085 , 1086 , 1087 , 1088   
+   361  A , 1089 , 1090 , 1091 , 1092   
+   362  A , 1093 , 1094 , 1095 , 1096   
+   363  A , 1097 , 1098 , 1099 , 1100   
+   364  A , 1101 , 1102 , 1103 , 1104   
+   365  A , 1105 , 1106 , 1107 , 1108   
+   366  A , 1109 , 1110 , 1111 , 1112   
+   367  A , 1113 , 1114 , 1115 , 1116   
+   368  A , 1117 , 1118 , 1119 , 1120   
+   369  ! 创建新组件短轴纵向加强筋  
+   370  ! 创建新组件加强拱  
+   371  CM, JIAQIANGGONG, AREA  
+   372  ASEL, NONE  
+   373  K , 1237 , -2900.0 , 390.0 , 400.0  
+   374  K , 1238 , -2500.0 , 390.0 , 200.0  
+   375  K , 1239 , -2500.0 , 390.0 , 0  
+   376  K , 1240 , -2700.0 , 390.0 , 0  
+   377  K , 1241 , -2900.0 , 110.0 , 400.0  
+   378  K , 1242 , -2500.0 , 110.0 , 200.0  
+   379  K , 1243 , -2500.0 , 110.0 , 0  
+   380  K , 1244 , -2700.0 , 110.0 , 0  
+   381  K , 1245 , 2900.0 , 390.0 , 400.0   
+   382  K , 1246 , 2500.0 , 390.0 , 200.0   
+   383  K , 1247 , 2500.0 , 390.0 , 0   
+   384  K , 1248 , 2700.0 , 390.0 , 0   
+   385  K , 1249 , 2900.0 , 110.0 , 400.0   
+   386  K , 1250 , 2500.0 , 110.0 , 200.0   
+   387  K , 1251 , 2500.0 , 110.0 , 0   
+   388  K , 1252 , 2700.0 , 110.0 , 0   
+   389  A , 1237 , 1238 , 1239 , 1240   
+   390  A , 1241 , 1242 , 1243 , 1244   
+   391  A , 1245 , 1246 , 1247 , 1248   
+   392  A , 1249 , 1250 , 1251 , 1252   
+   393  ! 创建新组件短轴纵向加强筋底部加强筋
+   394  CMSEL,A,JIAQIANGLEI 
+   395  CM, JIAQIANGLEI, AREA, APPEND   
+   396  ASEL, NONE  
+   397      
+   398  ! ========== 分配属性 ==========
+   399  ! 箱盖  
+   400  CMSEL, S, TOP   
+   401  TYPE, 1 
+   402  MAT, 1  
+   403  REAL, 1 
+   404  ! 箱顶沿
+   405  CMSEL, S, TOP_RIM   
+   406  TYPE, 1 
+   407  MAT, 1  
+   408  REAL, 2 
+   409  ! 箱底沿
+   410  CMSEL, S, BOTTOM_RIM
+   411  TYPE, 1 
+   412  MAT, 1  
+   413  REAL, 2 
+   414  ! 侧壁  
+   415  CMSEL, S, CEBI  
+   416  TYPE, 1 
+   417  MAT, 1  
+   418  REAL, 3 
+   419  ! 加强拱
+   420  CMSEL, S, JIAQIANGGONG  
+   421  TYPE, 1 
+   422  MAT, 1  
+   423  REAL, 4 
+   424  ! 箱盖加强筋
+   425  CMSEL, S, XDJIAQIANGJIN 
+   426  TYPE, 1 
+   427  MAT, 1  
+   428  REAL, 5 
+   429  ! 纵向加强拱下加强筋
+   430  CMSEL, S, JIAQIANGLEI   
+   431  TYPE, 1 
+   432  MAT, 1  
+   433  REAL, 6 
+   434  ! 线面粘合  
+   435  ASEL, ALL   
+   436  AOVLAP, ALL 
+   437  ! 将侧壁面选择为一个组件
+   438  ASEL, NONE  
+   439  ASEL, S, LOC, Y, 1000.0  ! 选择Y=Box_Width/2的面
+   440  ASEL, A, LOC, Y, -1000.0  ! 选择Y=-Box_Width/2的面  
+   441  ASEL, A, LOC, X, 2500.0  ! 选择Y=Box_Length/2的面   
+   442  ASEL, A, LOC, X, -2500.0  ! 选择Y=-Box_Length/2的面 
+   443  CM, CEBI, AREA, APPEND  
+   444  ! 将顶面选择为一个组件  
+   445  ASEL, NONE  
+   446  ASEL, S, LOC, Z, 3000  ! 选择Z=Box_Height的面   
+   447  CM, TOP, AREA, APPEND   
+   448      
+   449  ASEL, ALL   
+   450  APLOT   
+   451  /PNUM,AREA,1
+
+ RUN SETUP PROCEDURE FROM FILE= E:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans
+
+ /INPUT FILE= E:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans  LINE=       0
+
+ CLEAR DATABASE AND RERUN START.ANS
+
+ RUN SETUP PROCEDURE FROM FILE= E:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans
+
+ Ansys Mechanical Enterprise                       
+
+ /INPUT FILE= E:\Program Files\ANSYS Inc\v252\ANSYS\apdl\start.ans  LINE=       0
+
+ PARAMETER STR = %z%h=%h%T1=%T1%T2=%T2%          
+子目录或文件 D:/result/z =%z% h=%h% T1=%T1% T2=%T2% 已经存在。
+
+ NEW DIRECTORY CREATED
+  DIRECTORY NAME = D:/result/z =%z% h=%h% T1=%T1% T2=%T2%
+
+ Current working directory switched to D:/result/z =%z% h=%h% T1=%T1% T2=%T2%                                                                                                                                                                                                                  
+
+ CURRENT JOBNAME REDEFINED AS %z%h=%h%T1=%T1%T2=%T2%
+     Opening new LOG, ERROR, LOCK and PAGE FILES
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2025 R2          25.2     ***
+ Ansys Mechanical Enterprise                       
+ 20120530  VERSION=WINDOWS x64   00:36:05  SEP 05, 2025 CP=      0.328
+
+                                                                               
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+
+ MATERIAL          1     EX   =   210000.0      
+
+ MATERIAL          1     PRXY =  0.3000000      
+
+ MATERIAL          1     DENS =  0.7850000E-08  
+
+ ELEMENT TYPE          1 IS SHELL181     4-NODE SHELL                
+  KEYOPT( 1- 6)=        0      0      0        0      0      0
+  KEYOPT( 7-12)=        0      0      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+
+ ELEMENT TYPE       1 IS SHELL181     4-NODE SHELL                
+  KEYOPT( 1- 6)=        0      0      0        0      0      0
+  KEYOPT( 7-12)=        0      2      0        0      0      0
+  KEYOPT(13-18)=        0      0      0        0      0      0
+
+ CURRENT NODAL DOF SET IS  UX    UY    UZ    ROTX  ROTY  ROTZ
+  THREE-DIMENSIONAL MODEL
+
+ REAL CONSTANT SET          1  ITEMS   1 TO   6
+    8.0000       0.0000       0.0000       0.0000       0.0000       0.0000    
+
+ REAL CONSTANT SET          2  ITEMS   1 TO   6
+    8.0000       0.0000       0.0000       0.0000       0.0000       0.0000    
+
+ REAL CONSTANT SET          3  ITEMS   1 TO   6
+    8.0000       0.0000       0.0000       0.0000       0.0000       0.0000    
+
+ REAL CONSTANT SET          4  ITEMS   1 TO   6
+    8.0000       0.0000       0.0000       0.0000       0.0000       0.0000    
+
+ REAL CONSTANT SET          5  ITEMS   1 TO   6
+    6.0000       0.0000       0.0000       0.0000       0.0000       0.0000    
+
+ REAL CONSTANT SET          6  ITEMS   1 TO   6
+    8.0000       0.0000       0.0000       0.0000       0.0000       0.0000    
+
+ KEYPOINT        1                  X,Y,Z=  -2500.00       1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT        2                  X,Y,Z=   2500.00       1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT        3                  X,Y,Z=   2500.00      -1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT        4                  X,Y,Z=  -2500.00      -1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT        5                  X,Y,Z=  -2500.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT        6                  X,Y,Z=   2500.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT        7                  X,Y,Z=   2500.00      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT        8                  X,Y,Z=  -2500.00      -1000.00       3000.00      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =      5     6     2     1
+
+     AREA NUMBER =      1
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =      6     7     3     2
+
+     AREA NUMBER =      2
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =      7     8     4     3
+
+     AREA NUMBER =      3
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =      8     5     1     4
+
+     AREA NUMBER =      4
+
+ ALL SELECT   FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO          4 STEP          1
+
+        4  AREAS (OF        4  DEFINED) SELECTED BY ASEL COMMAND.
+
+ DEFINITION OF COMPONENT = CEBI      ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO          4 STEP          1
+
+        0 AREAS (OF        4  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ KEYPOINT       17                  X,Y,Z=  -2700.00       1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT       18                  X,Y,Z=   2700.00       1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT       19                  X,Y,Z=   2700.00      -1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT       20                  X,Y,Z=  -2700.00      -1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT       21                  X,Y,Z=  -2700.00       1200.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       22                  X,Y,Z=   2700.00       1200.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       23                  X,Y,Z=   2700.00      -1200.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       24                  X,Y,Z=  -2700.00      -1200.00       3000.00      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =      1     2     3     4
+
+     AREA NUMBER =      5
+
+ PARAMETER BOTTOM_AREA =     5.000000000    
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     17    18    19    20
+
+     AREA NUMBER =      6
+
+ PARAMETER RIM_AREA =     6.000000000    
+
+ SUBTRACT AREAS
+
+      AREA NUMBERS TO BE OPERATED ON =       6
+      AREAS OPERATED ON WILL BE DELETED IF POSSIBLE
+      AREA NUMBERS TO BE SUBTRACTED  =       5
+      AREAS SUBTRACTED WILL BE DELETED IF POSSIBLE
+      OUTPUT AREAS =     7
+
+ DEFINITION OF COMPONENT = BOTTOM_RIM  ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO          7 STEP          1
+
+        0 AREAS (OF        5  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =      8     7     6     5
+
+     AREA NUMBER =      5
+
+ PARAMETER UP_AREA =     5.000000000    
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     24    23    22    21
+
+     AREA NUMBER =      6
+
+ PARAMETER UP_RIM_AREA =     6.000000000    
+
+ SUBTRACT AREAS
+
+      AREA NUMBERS TO BE OPERATED ON =       6
+      AREAS OPERATED ON WILL BE DELETED IF POSSIBLE
+      AREA NUMBERS TO BE SUBTRACTED  =       5
+      AREAS SUBTRACTED WILL BE DELETED IF POSSIBLE
+      OUTPUT AREAS =     8
+
+ DEFINITION OF COMPONENT = TOP_RIM   ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO          8 STEP          1
+
+        0 AREAS (OF        6  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ KEYPOINT       33                  X,Y,Z=   517.000       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       34                  X,Y,Z=   517.000      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       35                  X,Y,Z=   517.000      -1000.00       3120.00      IN CSYS=        0
+
+ KEYPOINT       36                  X,Y,Z=   517.000       1000.00       3120.00      IN CSYS=        0
+
+ KEYPOINT       37                  X,Y,Z=  -1300.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       38                  X,Y,Z=  -1100.00      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       39                  X,Y,Z=  -1100.00      -1000.00       3120.00      IN CSYS=        0
+
+ KEYPOINT       40                  X,Y,Z=  -1300.00       1000.00       3120.00      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     33    34    35    36
+
+     AREA NUMBER =      5
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     37    38    39    40
+
+     AREA NUMBER =      6
+
+ DEFINITION OF COMPONENT = XDJIAQIANGJIN  ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO          8 STEP          1
+
+        0 AREAS (OF        8  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ KEYPOINT       73                  X,Y,Z=  -2500.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       74                  X,Y,Z=  -2500.00      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       75                  X,Y,Z=  -1100.00      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       76                  X,Y,Z=  -1300.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       77                  X,Y,Z=   517.000       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       78                  X,Y,Z=   517.000      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       79                  X,Y,Z=   2500.00      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       80                  X,Y,Z=   2500.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       81                  X,Y,Z=  -1300.00       1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       82                  X,Y,Z=  -1100.00      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       83                  X,Y,Z=   517.000      -1000.00       3000.00      IN CSYS=        0
+
+ KEYPOINT       84                  X,Y,Z=   517.000       1000.00       3000.00      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     73    74    75    76
+
+     AREA NUMBER =      9
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     77    78    79    80
+
+     AREA NUMBER =     10
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =     81    82    83    84
+
+     AREA NUMBER =     11
+
+ DEFINITION OF COMPONENT = TOP       ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO         11 STEP          1
+
+        0 AREAS (OF       11  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ KEYPOINT      121                  X,Y,Z=  -1690.00       1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      122                  X,Y,Z=  -1690.00       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      123                  X,Y,Z=  -1690.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      124                  X,Y,Z=  -1690.00       1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      125                  X,Y,Z=  -1310.00       1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      126                  X,Y,Z=  -1310.00       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      127                  X,Y,Z=  -1310.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      128                  X,Y,Z=  -1310.00       1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      129                  X,Y,Z=  -890.000       1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      130                  X,Y,Z=  -890.000       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      131                  X,Y,Z=  -890.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      132                  X,Y,Z=  -890.000       1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      133                  X,Y,Z=  -510.000       1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      134                  X,Y,Z=  -510.000       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      135                  X,Y,Z=  -510.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      136                  X,Y,Z=  -510.000       1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      137                  X,Y,Z=  -1690.00      -1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      138                  X,Y,Z=  -1690.00      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      139                  X,Y,Z=  -1690.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      140                  X,Y,Z=  -1690.00      -1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      141                  X,Y,Z=  -1310.00      -1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      142                  X,Y,Z=  -1310.00      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      143                  X,Y,Z=  -1310.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      144                  X,Y,Z=  -1310.00      -1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      145                  X,Y,Z=  -890.000      -1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      146                  X,Y,Z=  -890.000      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      147                  X,Y,Z=  -890.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      148                  X,Y,Z=  -890.000      -1200.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      149                  X,Y,Z=  -510.000      -1000.00       0.00000      IN CSYS=        0
+
+ KEYPOINT      150                  X,Y,Z=  -510.000      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      151                  X,Y,Z=  -510.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      152                  X,Y,Z=  -510.000      -1200.00       0.00000      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    121   122   123   124
+
+     AREA NUMBER =     12
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    125   126   127   128
+
+     AREA NUMBER =     13
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    129   130   131   132
+
+     AREA NUMBER =     14
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    133   134   135   136
+
+     AREA NUMBER =     15
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    137   138   139   140
+
+     AREA NUMBER =     16
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    141   142   143   144
+
+     AREA NUMBER =     17
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    145   146   147   148
+
+     AREA NUMBER =     18
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    149   150   151   152
+
+     AREA NUMBER =     19
+
+ DEFINITION OF COMPONENT = JIAQIANGLEI  ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO         19 STEP          1
+
+        0 AREAS (OF       19  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ KEYPOINT      161                  X,Y,Z=  -1700.00       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      162                  X,Y,Z=  -1700.00       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      163                  X,Y,Z=  -1700.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      164                  X,Y,Z=  -1700.00       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      165                  X,Y,Z=  -1300.00       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      166                  X,Y,Z=  -1300.00       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      167                  X,Y,Z=  -1300.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      168                  X,Y,Z=  -1300.00       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      169                  X,Y,Z=  -1700.00       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      170                  X,Y,Z=  -1300.00       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      171                  X,Y,Z=  -1300.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      172                  X,Y,Z=  -1700.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      173                  X,Y,Z=  -1700.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      174                  X,Y,Z=  -1300.00       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      175                  X,Y,Z=  -1300.00       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      176                  X,Y,Z=  -1700.00       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      177                  X,Y,Z=  -1700.00       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      178                  X,Y,Z=  -1700.00       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      179                  X,Y,Z=  -1300.00       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      180                  X,Y,Z=  -1300.00       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      181                  X,Y,Z=  -900.000       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      182                  X,Y,Z=  -900.000       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      183                  X,Y,Z=  -900.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      184                  X,Y,Z=  -900.000       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      185                  X,Y,Z=  -500.000       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      186                  X,Y,Z=  -500.000       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      187                  X,Y,Z=  -500.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      188                  X,Y,Z=  -500.000       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      189                  X,Y,Z=  -900.000       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      190                  X,Y,Z=  -500.000       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      191                  X,Y,Z=  -500.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      192                  X,Y,Z=  -900.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      193                  X,Y,Z=  -900.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      194                  X,Y,Z=  -500.000       1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      195                  X,Y,Z=  -500.000       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      196                  X,Y,Z=  -900.000       1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      197                  X,Y,Z=  -900.000       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      198                  X,Y,Z=  -900.000       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      199                  X,Y,Z=  -500.000       1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      200                  X,Y,Z=  -500.000       1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      201                  X,Y,Z=  -1700.00      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      202                  X,Y,Z=  -1700.00      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      203                  X,Y,Z=  -1700.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      204                  X,Y,Z=  -1700.00      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      205                  X,Y,Z=  -1300.00      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      206                  X,Y,Z=  -1300.00      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      207                  X,Y,Z=  -1300.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      208                  X,Y,Z=  -1300.00      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      209                  X,Y,Z=  -1700.00      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      210                  X,Y,Z=  -1300.00      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      211                  X,Y,Z=  -1300.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      212                  X,Y,Z=  -1700.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      213                  X,Y,Z=  -1700.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      214                  X,Y,Z=  -1300.00      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      215                  X,Y,Z=  -1300.00      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      216                  X,Y,Z=  -1700.00      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      217                  X,Y,Z=  -1700.00      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      218                  X,Y,Z=  -1700.00      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      219                  X,Y,Z=  -1300.00      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      220                  X,Y,Z=  -1300.00      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      221                  X,Y,Z=  -900.000      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      222                  X,Y,Z=  -900.000      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      223                  X,Y,Z=  -900.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      224                  X,Y,Z=  -900.000      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      225                  X,Y,Z=  -500.000      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      226                  X,Y,Z=  -500.000      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      227                  X,Y,Z=  -500.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      228                  X,Y,Z=  -500.000      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      229                  X,Y,Z=  -900.000      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      230                  X,Y,Z=  -500.000      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      231                  X,Y,Z=  -500.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      232                  X,Y,Z=  -900.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      233                  X,Y,Z=  -900.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      234                  X,Y,Z=  -500.000      -1400.00       400.000      IN CSYS=        0
+
+ KEYPOINT      235                  X,Y,Z=  -500.000      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      236                  X,Y,Z=  -900.000      -1000.00       200.000      IN CSYS=        0
+
+ KEYPOINT      237                  X,Y,Z=  -900.000      -1400.00       2500.00      IN CSYS=        0
+
+ KEYPOINT      238                  X,Y,Z=  -900.000      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      239                  X,Y,Z=  -500.000      -1000.00       2700.00      IN CSYS=        0
+
+ KEYPOINT      240                  X,Y,Z=  -500.000      -1400.00       2500.00      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    161   162   163   164
+
+     AREA NUMBER =     20
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    165   166   167   168
+
+     AREA NUMBER =     21
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    169   170   171   172
+
+     AREA NUMBER =     22
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    173   174   175   176
+
+     AREA NUMBER =     23
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    177   178   179   180
+
+     AREA NUMBER =     24
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    181   182   183   184
+
+     AREA NUMBER =     25
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    185   186   187   188
+
+     AREA NUMBER =     26
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    189   190   191   192
+
+     AREA NUMBER =     27
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    193   194   195   196
+
+     AREA NUMBER =     28
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    197   198   199   200
+
+     AREA NUMBER =     29
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    201   202   203   204
+
+     AREA NUMBER =     30
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    205   206   207   208
+
+     AREA NUMBER =     31
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    209   210   211   212
+
+     AREA NUMBER =     32
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    213   214   215   216
+
+     AREA NUMBER =     33
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    217   218   219   220
+
+     AREA NUMBER =     34
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    221   222   223   224
+
+     AREA NUMBER =     35
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    225   226   227   228
+
+     AREA NUMBER =     36
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    229   230   231   232
+
+     AREA NUMBER =     37
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    233   234   235   236
+
+     AREA NUMBER =     38
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    237   238   239   240
+
+     AREA NUMBER =     39
+
+ KEYPOINT      681                  X,Y,Z=  -1900.00       1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      682                  X,Y,Z=  -1800.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      683                  X,Y,Z=  -1700.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      684                  X,Y,Z=  -1700.00       1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      685                  X,Y,Z=  -1900.00       1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      686                  X,Y,Z=  -1700.00       1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      687                  X,Y,Z=  -1700.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      688                  X,Y,Z=  -1800.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      689                  X,Y,Z=  -1900.00       1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      690                  X,Y,Z=  -1900.00       1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      691                  X,Y,Z=  -1800.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      692                  X,Y,Z=  -1800.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      693                  X,Y,Z=  -1800.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      694                  X,Y,Z=  -1800.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      695                  X,Y,Z=  -1700.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      696                  X,Y,Z=  -1700.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      697                  X,Y,Z=  -1900.00      -1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      698                  X,Y,Z=  -1800.00      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      699                  X,Y,Z=  -1700.00      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      700                  X,Y,Z=  -1700.00      -1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      701                  X,Y,Z=  -1900.00      -1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      702                  X,Y,Z=  -1700.00      -1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      703                  X,Y,Z=  -1700.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      704                  X,Y,Z=  -1800.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      705                  X,Y,Z=  -1900.00      -1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      706                  X,Y,Z=  -1900.00      -1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      707                  X,Y,Z=  -1800.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      708                  X,Y,Z=  -1800.00      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      709                  X,Y,Z=  -1800.00      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      710                  X,Y,Z=  -1800.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      711                  X,Y,Z=  -1700.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      712                  X,Y,Z=  -1700.00      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      713                  X,Y,Z=  -1300.00       1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      714                  X,Y,Z=  -1300.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      715                  X,Y,Z=  -900.000       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      716                  X,Y,Z=  -900.000       1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      717                  X,Y,Z=  -1300.00       1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      718                  X,Y,Z=  -900.000       1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      719                  X,Y,Z=  -900.000       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      720                  X,Y,Z=  -1300.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      721                  X,Y,Z=  -1300.00       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      722                  X,Y,Z=  -900.000       1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      723                  X,Y,Z=  -900.000       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      724                  X,Y,Z=  -1300.00       1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      725                  X,Y,Z=  -1300.00      -1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      726                  X,Y,Z=  -1300.00      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      727                  X,Y,Z=  -900.000      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      728                  X,Y,Z=  -900.000      -1000.00       600.000      IN CSYS=        0
+
+ KEYPOINT      729                  X,Y,Z=  -1300.00      -1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      730                  X,Y,Z=  -900.000      -1000.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      731                  X,Y,Z=  -900.000      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      732                  X,Y,Z=  -1300.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      733                  X,Y,Z=  -1300.00      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      734                  X,Y,Z=  -900.000      -1400.00       1100.00      IN CSYS=        0
+
+ KEYPOINT      735                  X,Y,Z=  -900.000      -1400.00       600.000      IN CSYS=        0
+
+ KEYPOINT      736                  X,Y,Z=  -1300.00      -1400.00       600.000      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    681   682   683   684
+
+     AREA NUMBER =     40
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    685   686   687   688
+
+     AREA NUMBER =     41
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    689   690   691   692
+
+     AREA NUMBER =     42
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    693   694   695   696
+
+     AREA NUMBER =     43
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    697   698   699   700
+
+     AREA NUMBER =     44
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    701   702   703   704
+
+     AREA NUMBER =     45
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    705   706   707   708
+
+     AREA NUMBER =     46
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    709   710   711   712
+
+     AREA NUMBER =     47
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    713   714   715   716
+
+     AREA NUMBER =     48
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    717   718   719   720
+
+     AREA NUMBER =     49
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    721   722   723   724
+
+     AREA NUMBER =     50
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    725   726   727   728
+
+     AREA NUMBER =     51
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    729   730   731   732
+
+     AREA NUMBER =     52
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =    733   734   735   736
+
+     AREA NUMBER =     53
+
+ KEYPOINT     1081                  X,Y,Z=  -2500.00       100.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1082                  X,Y,Z=  -2900.00       100.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1083                  X,Y,Z=  -2900.00       100.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1084                  X,Y,Z=  -2500.00       100.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1085                  X,Y,Z=  -2500.00       400.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1086                  X,Y,Z=  -2500.00       400.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1087                  X,Y,Z=  -2900.00       400.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1088                  X,Y,Z=  -2900.00       400.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1089                  X,Y,Z=  -2500.00       100.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1090                  X,Y,Z=  -2500.00       400.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1091                  X,Y,Z=  -2900.00       400.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1092                  X,Y,Z=  -2900.00       100.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1093                  X,Y,Z=  -2500.00       100.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1094                  X,Y,Z=  -2900.00       100.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1095                  X,Y,Z=  -2900.00       400.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1096                  X,Y,Z=  -2500.00       400.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1097                  X,Y,Z=  -2900.00       100.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1098                  X,Y,Z=  -2900.00       100.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1099                  X,Y,Z=  -2900.00       400.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1100                  X,Y,Z=  -2900.00       400.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1101                  X,Y,Z=   2500.00       400.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1102                  X,Y,Z=   2900.00       400.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1103                  X,Y,Z=   2900.00       400.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1104                  X,Y,Z=   2500.00       400.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1105                  X,Y,Z=   2500.00       100.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1106                  X,Y,Z=   2500.00       100.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1107                  X,Y,Z=   2900.00       100.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1108                  X,Y,Z=   2900.00       100.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1109                  X,Y,Z=   2500.00       100.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1110                  X,Y,Z=   2500.00       400.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1111                  X,Y,Z=   2900.00       400.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1112                  X,Y,Z=   2900.00       100.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1113                  X,Y,Z=   2500.00       100.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1114                  X,Y,Z=   2900.00       100.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1115                  X,Y,Z=   2900.00       400.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1116                  X,Y,Z=   2500.00       400.000       2700.00      IN CSYS=        0
+
+ KEYPOINT     1117                  X,Y,Z=   2900.00       100.000       2500.00      IN CSYS=        0
+
+ KEYPOINT     1118                  X,Y,Z=   2900.00       100.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1119                  X,Y,Z=   2900.00       400.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1120                  X,Y,Z=   2900.00       400.000       2500.00      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1081  1082  1083  1084
+
+     AREA NUMBER =     54
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1085  1086  1087  1088
+
+     AREA NUMBER =     55
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1089  1090  1091  1092
+
+     AREA NUMBER =     56
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1093  1094  1095  1096
+
+     AREA NUMBER =     57
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1097  1098  1099  1100
+
+     AREA NUMBER =     58
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1101  1102  1103  1104
+
+     AREA NUMBER =     59
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1105  1106  1107  1108
+
+     AREA NUMBER =     60
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1109  1110  1111  1112
+
+     AREA NUMBER =     61
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1113  1114  1115  1116
+
+     AREA NUMBER =     62
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1117  1118  1119  1120
+
+     AREA NUMBER =     63
+
+ DEFINITION OF COMPONENT = JIAQIANGGONG  ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO         63 STEP          1
+
+        0 AREAS (OF       63  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ KEYPOINT     1237                  X,Y,Z=  -2900.00       390.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1238                  X,Y,Z=  -2500.00       390.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1239                  X,Y,Z=  -2500.00       390.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1240                  X,Y,Z=  -2700.00       390.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1241                  X,Y,Z=  -2900.00       110.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1242                  X,Y,Z=  -2500.00       110.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1243                  X,Y,Z=  -2500.00       110.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1244                  X,Y,Z=  -2700.00       110.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1245                  X,Y,Z=   2900.00       390.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1246                  X,Y,Z=   2500.00       390.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1247                  X,Y,Z=   2500.00       390.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1248                  X,Y,Z=   2700.00       390.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1249                  X,Y,Z=   2900.00       110.000       400.000      IN CSYS=        0
+
+ KEYPOINT     1250                  X,Y,Z=   2500.00       110.000       200.000      IN CSYS=        0
+
+ KEYPOINT     1251                  X,Y,Z=   2500.00       110.000       0.00000      IN CSYS=        0
+
+ KEYPOINT     1252                  X,Y,Z=   2700.00       110.000       0.00000      IN CSYS=        0
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1237  1238  1239  1240
+
+     AREA NUMBER =     64
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1241  1242  1243  1244
+
+     AREA NUMBER =     65
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1245  1246  1247  1248
+
+     AREA NUMBER =     66
+
+ DEFINE AREA BY LIST OF KEYPOINTS
+   KEYPOINT LIST =   1249  1250  1251  1252
+
+     AREA NUMBER =     67
+
+ ALSO SELECT COMPONENT JIAQIANGLEI                                                                                                                                                                                                                                                     
+
+ DEFINITION OF COMPONENT = JIAQIANGLEI  ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO         67 STEP          1
+
+        0 AREAS (OF       67  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ SELECT      COMPONENT TOP                                                                                                                                                                                                                                                             
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        1
+
+ SELECT      COMPONENT TOP_RIM                                                                                                                                                                                                                                                         
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        2
+
+ SELECT      COMPONENT BOTTOM_RIM                                                                                                                                                                                                                                                      
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        2
+
+ SELECT      COMPONENT CEBI                                                                                                                                                                                                                                                            
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        3
+
+ SELECT      COMPONENT JIAQIANGGONG                                                                                                                                                                                                                                                    
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        4
+
+ SELECT      COMPONENT XDJIAQIANGJIN                                                                                                                                                                                                                                                   
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        5
+
+ SELECT      COMPONENT JIAQIANGLEI                                                                                                                                                                                                                                                     
+
+ ELEMENT TYPE SET TO         1
+
+ MATERIAL NUMBER SET TO         1
+
+ REAL CONSTANT NUMBER=        6
+
+ ALL SELECT   FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO         67 STEP          1
+
+       67  AREAS (OF       67  DEFINED) SELECTED BY ASEL COMMAND.
+
+ OVERLAP AREAS
+      INPUT AREAS =     1    2    3    4    5    6    7    8    9   10
+      INPUT AREAS =    11   12   13   14   15   16   17   18   19   20
+      INPUT AREAS =    21   22   23   24   25   26   27   28   29   30
+      INPUT AREAS =    31   32   33   34   35   36   37   38   39   40
+      INPUT AREAS =    41   42   43   44   45   46   47   48   49   50
+      INPUT AREAS =    51   52   53   54   55   56   57   58   59   60
+      INPUT AREAS =    61   62   63   64   65   66   67
+      INPUT AREAS WILL BE DELETED IF POSSIBLE
+
+ *** NOTE ***                            CP =       0.750   TIME= 00:36:05
+ After AOVL, shortest output line 274 is 1.851851852E-03 times the       
+ length of longest output line 17.  Extreme variations in line length    
+ can make meshing difficult.  If short lines are not needed to           
+ represent the geometry, use LCOMB to eliminate them.                    
+                                                                         
+      OUTPUT AREAS =     5    6   12   13   14   15   16   17   18   19
+      OUTPUT AREAS =    26   36   40   41   44   45   48   49   51   52
+      OUTPUT AREAS =    54   55   59   60   64   65   66   67   68   69
+      OUTPUT AREAS =    70   71   72   73   74   75   76   77   78   79
+      OUTPUT AREAS =    80   81   82   83   84   85   86   87   88   89
+      OUTPUT AREAS =    90   91   92   93   94   95   96   97   98   99
+      OUTPUT AREAS =   100  101  102  103  104  105  106  107  108  109
+      OUTPUT AREAS =   110  111  112  113  114  115  116  117  118  119
+      OUTPUT AREAS =   120  121  122  123  124  125  126  127  128  129
+      OUTPUT AREAS =   130  131  132  133  134  135  136  137  138  139
+      OUTPUT AREAS =   140  141  142  143  144  145  146  147  148  149
+      OUTPUT AREAS =   150  151  152  153  154  155  156  157  158  159
+
+ *** WARNING ***                         CP =       0.750   TIME= 00:36:05
+ Assembly CEBI is deleted.                                               
+
+ *** WARNING ***                         CP =       0.750   TIME= 00:36:05
+ Assembly BOTTOM_RIM is deleted.                                         
+
+ *** WARNING ***                         CP =       0.750   TIME= 00:36:05
+ Assembly TOP_RIM is deleted.                                            
+
+ *** WARNING ***                         CP =       0.750   TIME= 00:36:05
+ Assembly TOP is deleted.                                                
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO        159 STEP          1
+
+        0 AREAS (OF      120  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ SELECT       FOR ITEM=LOC  COMPONENT=Y     BETWEEN  1000.0     AND   1000.0    
+   KABS=  0.  TOLERANCE=  5.00000    
+
+        8  AREAS (OF      120  DEFINED) SELECTED BY  ASEL  COMMAND.
+
+ ALSO SELECT  FOR ITEM=LOC  COMPONENT=Y     BETWEEN -1000.0     AND  -1000.0    
+   KABS=  0.  TOLERANCE=  5.00000    
+
+       16  AREAS (OF      120  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ ALSO SELECT  FOR ITEM=LOC  COMPONENT=X     BETWEEN  2500.0     AND   2500.0    
+   KABS=  0.  TOLERANCE=  12.5000    
+
+       19  AREAS (OF      120  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ ALSO SELECT  FOR ITEM=LOC  COMPONENT=X     BETWEEN -2500.0     AND  -2500.0    
+   KABS=  0.  TOLERANCE=  12.5000    
+
+       22  AREAS (OF      120  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ DEFINITION OF COMPONENT = CEBI      ENTITY=AREA
+
+ NONE SELECT  FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO        159 STEP          1
+
+        0 AREAS (OF      120  DEFINED) SELECTED BY ASEL  COMMAND.
+
+ SELECT       FOR ITEM=LOC  COMPONENT=Z     BETWEEN  3000.0     AND   3000.0    
+   KABS=  0.  TOLERANCE=  15.0000    
+
+        4  AREAS (OF      120  DEFINED) SELECTED BY  ASEL  COMMAND.
+
+ DEFINITION OF COMPONENT = TOP       ENTITY=AREA
+
+ ALL SELECT   FOR ITEM=AREA COMPONENT=    
+  IN RANGE         1 TO        159 STEP          1
+
+      120  AREAS (OF      120  DEFINED) SELECTED BY ASEL COMMAND.
+
+ *** NOTE *** Display device has not yet been specified with the /SHOW command.  Display commands ignored. 
+
+ AREA NUMBERING KEY =  1
+
+ ***** END OF INPUT ENCOUNTERED *****
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          4
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+
+ ***** PROBLEM TERMINATED BY INDICATED ERROR(S) OR BY END OF INPUT DATA *****
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2025 R2            Build: 25.2       Update: UP20250519   Platform: WINDOWS x64 
+Date Run: 09/05/2025   Time: 00:36     Process ID: 41672
+Operating System: Windows 11  (Build: 26100)
+
+Processor Model: AMD Ryzen 7 9700X 8-Core Processor
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          AOCL-BLAS 5.0.1 Build 20250320
+
+Number of machines requested            :    1
+Total number of cores available         :   16
+Number of physical cores available      :    8
+Number of processes requested           :    4
+Number of threads per process requested :    1
+Total number of cores requested         :    4 (Distributed Memory Parallel)               
+MPI Type: INTELMPI
+MPI Version: Intel(R) MPI Library 2021.14 for Windows* OS
+
+
+GPU Acceleration: Not Requested
+
+Job Name: %z%h=%h%T1=%T1%T2=%T2%0
+Input File: output.mac
+
+  Core                Machine Name   Working Directory
+ -----------------------------------------------------
+     0             DESKTOP-OC4QV15   F:\work\VSCODE\oilbox_general\auto_test
+     1             DESKTOP-OC4QV15   F:\work\VSCODE\oilbox_general\auto_test
+     2             DESKTOP-OC4QV15   F:\work\VSCODE\oilbox_general\auto_test
+     3             DESKTOP-OC4QV15   F:\work\VSCODE\oilbox_general\auto_test
+ 
+Latency time from master to core     1 =    1.927 microseconds
+Latency time from master to core     2 =    1.815 microseconds
+Latency time from master to core     3 =    1.806 microseconds
+ 
+Communication speed from master to core     1 = 25249.34 MB/sec
+Communication speed from master to core     2 = 22262.42 MB/sec
+Communication speed from master to core     3 = 21225.79 MB/sec
+
+Total CPU time for main thread                    :        0.5 seconds
+Total CPU time summed for all threads             :        1.0 seconds
+
+Elapsed time spent obtaining a license            :        1.2 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        0.0 seconds
+ 
+
+Sum of disk space used on all processes           :        0.0 MB
+
+Sum of memory used on all processes               :       31.0 MB
+Sum of memory allocated on all processes          :     2880.0 MB
+Physical memory available                         :         31 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.0 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2025 R2         Build 25.2         UP20250519    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1024 MB     Scratch Memory Requested   1024 MB |
+ |  Max Database Used(Master)      3 MB     Max Scratch Used(Master)     10 MB |
+ |  Max Database Used(Workers)     1 MB     Max Scratch Used(Workers)     5 MB |
+ |  Sum Database Used(All)         6 MB     Sum Scratch Used(All)        25 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          1.031       Time  =  00:36:06          |
+ |        Elapsed Time (sec) =          4.000       Date  =  09/05/2025        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

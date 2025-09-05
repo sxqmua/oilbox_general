@@ -17,3 +17,8 @@ def outputtxt(OutputList, file_path_str, output_dir_str="output"):
     # 5. 写入文件内容
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(OutputList)
+        
+def outputmac(OutputList,file_path,file_name):
+    """输出mac文档到指定路径"""
+    with open(file_path+'/'+file_name+'.mac', "w", encoding="utf-8") as f:
+        f.write(OutputList)
